@@ -5,41 +5,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
-public class LevelEvent {
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
+public class LevelEvent extends RealmObject {
+    @PrimaryKey
     private String id;
     private String level;
     private String eventType;
     private String eventVariableId;
-    private HashMap<String,Monster> monsterList= new HashMap<>();;
-    private HashMap<String,Move> moveList = new HashMap<>();;
-    private ArrayList<String> monsterNameList = new ArrayList<>();
-    private ArrayList<String> moveNameList = new ArrayList<>();
-    private ArrayList<String> eventTypeList = new ArrayList<>();;
+    private RealmList<String> monsterList= new RealmList<String>();;
+    private RealmList<String> moveList = new RealmList<String>();;
+    private RealmList<String> monsterNameList = new RealmList<String>();
+    private RealmList<String> moveNameList = new RealmList<String>();
+    private RealmList<String> eventTypeList = new RealmList<String>();;
 
-    public LevelEvent(){ }
 
-    public LevelEvent(LevelEvent levelEvent){
-        this.id = levelEvent.id;
-        this.level = levelEvent.level;
-        this.eventType = levelEvent.eventType;
-        this.eventVariableId = levelEvent.eventVariableId;
-        this.monsterList = new HashMap<>(levelEvent.monsterList);
-        this.moveList = new HashMap<>(levelEvent.moveList);
-        this.monsterNameList = new ArrayList<>(levelEvent.monsterNameList);
-        this.moveNameList = new ArrayList<>(levelEvent.moveNameList);
-        this.eventTypeList = new ArrayList<>(levelEvent.eventTypeList);
+    public RealmList<String> getEventTypeList() {
+        return eventTypeList;
     }
 
-
-    public ArrayList<String> getEventTypeList() {
-        return new ArrayList<>(eventTypeList);
-    }
-    public ArrayList<String> getEventTypeList(boolean change) {
-        return change? eventTypeList:new ArrayList<>(eventTypeList);
-    }
-
-    public void setEventTypeList(ArrayList<String> eventTypeList) {
-        this.eventTypeList = new ArrayList<>(eventTypeList);
+    public void setEventTypeList(RealmList<String> eventTypeList) {
+        this.eventTypeList = eventTypeList;
     }
 
     public String getId() {
@@ -74,51 +62,41 @@ public class LevelEvent {
         this.eventVariableId = eventVariableId;
     }
 
-    public HashMap<String, Monster> getMonsterList() {
-        return new HashMap<>(monsterList);
-    }
-    public HashMap<String, Monster> getMonsterList(boolean change) {
-        return change?monsterList:new HashMap<>(monsterList);
-    }
-    public void setMonsterList(HashMap<String, Monster> monsterList) {
-        this.monsterList = new HashMap<>(monsterList);
+    public RealmList<String> getMonsterList() {
+        return monsterList;
     }
 
-    public HashMap<String, Move> getMoveList() {
-        return new HashMap<>(moveList);
-    }
-    public HashMap<String, Move> getMoveList(boolean change) {
-        return change?moveList:new HashMap<>(moveList);
-    }
-    public void setMoveList(HashMap<String, Move> moveList) {
-        this.moveList = new HashMap<>(moveList);
+    public void setMonsterList(RealmList<String> monsterList) {
+        this.monsterList = monsterList;
     }
 
-    public ArrayList<String> getMonsterNameList() {
-        return new ArrayList<>(monsterNameList);
+    public RealmList<String> getMoveList() {
+        return moveList;
     }
-    public ArrayList<String> getMonsterNameList(boolean change) {
-        return change?monsterNameList:new ArrayList<>(monsterNameList);
+
+    public void setMoveList(RealmList<String> moveList) {
+        this.moveList = moveList;
+    }
+
+    public RealmList<String> getMonsterNameList() {
+        return monsterNameList;
     }
 
     public void setMonsterNameList() {
         monsterNameList.clear();
-        for(String key : monsterList.keySet()){
-            monsterNameList.add(monsterList.get(key).getName());
+        for(int i = 0; i<monsterList.size(); i++){
+            //monsterNameList.add(monsterList.get(key).getName());
         }
     }
 
-    public ArrayList<String> getMoveNameList() {
-        return new ArrayList<>(moveNameList);
-    }
-    public ArrayList<String> getMoveNameList(boolean change) {
-        return change?moveNameList: new ArrayList<>(moveNameList);
+    public RealmList<String> getMoveNameList() {
+        return moveNameList;
     }
 
     public void setMoveNameList() {
         moveNameList.clear();
-        for(String key : moveList.keySet()){
-            moveNameList.add(moveList.get(key).getName());
+        for(int i = 0;i< moveList.size();i++){
+            //moveNameList.add(moveList.get(key).getName());
         }
     }
 

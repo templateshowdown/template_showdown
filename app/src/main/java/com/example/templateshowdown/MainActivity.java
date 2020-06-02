@@ -14,6 +14,8 @@ import org.androidannotations.annotations.*;
 
 import java.io.IOException;
 
+import io.realm.Realm;
+
 @EActivity (R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
     public static String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Realm.init(this);
         //setContentView(R.layout.activity_main);
         loadDatabase();
         loadUserData();

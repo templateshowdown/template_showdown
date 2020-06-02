@@ -5,25 +5,30 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Theme implements Serializable {
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
+public class Theme extends RealmObject implements Serializable {
+    @PrimaryKey
     private String name;
-    private HashMap<String,Type> typeList = new HashMap<>();
-    private HashMap<String,Monster> monsterList = new HashMap<>();
-    private HashMap<String,Move> moveList = new HashMap<>();
-    private HashMap<String,ArrayList<String>> hyperlinkList = new HashMap<>(); //store every hyperlink in theme
-    public Type tempType = new Type();
-    public Monster tempMonster = new Monster();
-    public Move tempMove = new Move();
+    private RealmList<String> typeList = new RealmList<String>();
+    private RealmList<String> monsterList = new RealmList<String>();
+    private RealmList<String> moveList = new RealmList<String>();
+    private RealmList<String> hyperlinkList = new RealmList<String>(); //store every hyperlink in theme
+    public String tempType;
+    public String tempMonster;
+    public String tempMove;
     public String tempHyperlink;
     private String shareCode;
     private String id;
-    private HashMap<String, String> extraVar = new HashMap<>();
-    private HashMap<String,Monster> tempLoadOut = new HashMap<>();
-    private HashMap<String,Monster> tempOpponentLoadOut = new HashMap<>();
-    private ArrayList<String> tempLoadOutId  = new ArrayList<>();
-    private HashMap<String,HashMap<String,Monster>> loadOutList = new HashMap<>();
-    private HashMap<String,ArrayList<String>> loadOutDialogueList = new HashMap<>();
-    private ArrayList<String> battleOptions = new ArrayList<>();
+    private RealmList<String> extraVar = new RealmList<String>();
+    private RealmList<String> tempLoadOut = new RealmList<String>();
+    private RealmList<String> tempOpponentLoadOut = new RealmList<String>();
+    private RealmList<String> tempLoadOutId  = new RealmList<String>();
+    private RealmList<String> loadOutList = new RealmList<String>();
+    private RealmList<String> loadOutDialogueList = new RealmList<String>();
+    private RealmList<String> battleOptions = new RealmList<String>();
     /*
         battleOptions.add(0,spinnerBattleType.getSelectedItem().equals(battletype);
         battleOptions.add(1,SizeLimit.getText().toString());//team
@@ -32,85 +37,49 @@ public class Theme implements Serializable {
     */
 
     //private Story storyList;
-    public Theme(){}
-    public Theme(Theme theme){
-        this.name = theme.name;
-        this.typeList = new HashMap<>(theme.typeList);
-        this.monsterList = new HashMap<>(theme.monsterList);
-        this.moveList = new HashMap<>(theme.moveList);;
-        this.hyperlinkList= new HashMap<>(theme.hyperlinkList);; //store every hyperlink in theme
-        this.tempType = new Type(theme.tempType);
-        this.tempMonster = new Monster(theme.tempMonster);
-        this.tempMove = new Move(theme.tempMove);
-        this.tempHyperlink = theme.tempHyperlink;
-        this.shareCode = theme.shareCode;
-        this.id = theme.id;
-        this.extraVar = new HashMap<>(theme.extraVar);
-        this.tempLoadOut = new HashMap<>(theme.tempLoadOut);
-        this.tempOpponentLoadOut = new HashMap<>(theme.tempOpponentLoadOut);
-        this.loadOutList = new HashMap<>(theme.loadOutList);
-        this.loadOutDialogueList = new HashMap<>(theme.loadOutDialogueList);
-        this.battleOptions = new ArrayList<>(theme.battleOptions);
+
+    public RealmList<String> getTempLoadOutId() {
+        return tempLoadOutId;
+    }
+    public void setTempLoadOutId(RealmList<String> tempLoadOutId) {
+        this.tempLoadOutId = tempLoadOutId;
+    }
+    public RealmList<String> getBattleOptions() {
+        return battleOptions;
+    }
+    public void setBattleOptions(RealmList<String> battleOptions) {
+        this.battleOptions = battleOptions;
     }
 
-    public ArrayList<String> getTempLoadOutId() {
-        return new ArrayList<>(tempLoadOutId);
-    }
-    public ArrayList<String> getTempLoadOutId(boolean change) {
-        return change? tempLoadOutId: new ArrayList<>(tempLoadOutId);
-    }
-    public void setTempLoadOutId(ArrayList<String> tempLoadOutId) {
-        this.tempLoadOutId = new ArrayList<>(tempLoadOutId);
+    public RealmList<String> getTempOpponentLoadOut() {
+        return tempOpponentLoadOut;
     }
 
-    public ArrayList<String> getBattleOptions() {
-        return new ArrayList<>(battleOptions);
-    }
-    public ArrayList<String> getBattleOptions(boolean change) {
-        return change?battleOptions: new ArrayList<>(battleOptions);
-    }
-    public void setBattleOptions(ArrayList<String> battleOptions) {
-        this.battleOptions = new ArrayList<>(battleOptions);
+    public void setTempOpponentLoadOut(RealmList<String> tempOpponentLoadOut) {
+        this.tempOpponentLoadOut = tempOpponentLoadOut;
     }
 
-    public HashMap<String, Monster> getTempOpponentLoadOut() {
-        return new HashMap<>(tempOpponentLoadOut);
+    public RealmList<String> getTempLoadOut() {
+        return tempLoadOut;
     }
-    public HashMap<String, Monster> getTempOpponentLoadOut(boolean change) {
-        return change? tempOpponentLoadOut:new HashMap<>(tempOpponentLoadOut);
-    }
-    public void setTempOpponentLoadOut(HashMap<String, Monster> tempOpponentLoadOut) {
-        this.tempOpponentLoadOut = new HashMap<>(tempOpponentLoadOut);
+    public void setTempLoadOut(RealmList<String> tempLoadOut) {
+        this.tempLoadOut = tempLoadOut;
     }
 
-    public HashMap<String, Monster> getTempLoadOut() {
-        return new HashMap<>(tempLoadOut);
-    }
-    public HashMap<String, Monster> getTempLoadOut(boolean change) {
-        return change? tempLoadOut:new HashMap<>(tempLoadOut);
-    }
-    public void setTempLoadOut(HashMap<String, Monster> tempLoadOut) {
-        this.tempLoadOut = new HashMap<>(tempLoadOut);
+    public RealmList<String> getLoadOutList() {
+        return loadOutList;
     }
 
-    public HashMap<String, HashMap<String, Monster>> getLoadOutList() {
-        return new HashMap<>(loadOutList);
-    }
-    public HashMap<String, HashMap<String, Monster>> getLoadOutList(boolean change) {
-        return change?loadOutList:new HashMap<>(loadOutList);
-    }
-    public void setLoadOutList(HashMap<String, HashMap<String, Monster>> loadOutList) {
-        this.loadOutList = new HashMap<>(loadOutList);
+    public void setLoadOutList(RealmList<String> loadOutList) {
+        this.loadOutList = loadOutList;
     }
 
-    public HashMap<String, ArrayList<String>> getLoadOutDialogueList() {
-        return new HashMap<>(loadOutDialogueList);
+    public RealmList<String> getLoadOutDialogueList() {
+        return loadOutDialogueList;
     }
-    public HashMap<String, ArrayList<String>> getLoadOutDialogueList(boolean change) {
-        return change? loadOutDialogueList:new HashMap<>(loadOutDialogueList);
-    }
-    public void setLoadOutDialogueList(HashMap<String, ArrayList<String>> loadOutDialogueList) {
-        this.loadOutDialogueList = new HashMap<>(loadOutDialogueList);
+
+    public void setLoadOutDialogueList(RealmList<String> loadOutDialogueList) {
+        this.loadOutDialogueList = loadOutDialogueList;
     }
 
     public String getId() {
@@ -129,63 +98,54 @@ public class Theme implements Serializable {
         this.name = name;
     }
 
-    public void setTypeList(HashMap<String,Type> typeList){
-        this.typeList = new HashMap<>(typeList);
+    public void setTypeList(RealmList<String> typeList){
+        this.typeList = typeList;
     }
-    public HashMap<String,Type> getTypeList() {
-        return new HashMap<>(typeList);
+    public RealmList<String> getTypeList() {
+        return typeList;
     }
-    public HashMap<String,Type> getTypeList(boolean change) {
-        return change? typeList:new HashMap<>(typeList);
-    }
+
     public void addType(Type type){
-        this.typeList.put(type.getId(),type);
+        this.typeList.add(type.getId());
     }
     public void removeType(Type type){
         this.typeList.remove(type.getId());
     }
 
-    public HashMap<String, Monster> getMonsterList() {
-        return new HashMap<>(monsterList);
+    public RealmList<String> getMonsterList() {
+        return monsterList;
     }
-    public HashMap<String, Monster> getMonsterList(boolean change) {
-        return change?monsterList:new HashMap<>(monsterList);
-    }
-    public void setMonsterList(HashMap<String,Monster> monsterList) {
-        this.monsterList = new HashMap<>(monsterList);
+
+    public void setMonsterList(RealmList<String> monsterList) {
+        this.monsterList = monsterList;
     }
 
     public void addMonster(Monster monster){
-        this.monsterList.put(monster.getId(),monster);
+        this.monsterList.add(monster.getId());
     }
 
 
-    public HashMap<String,Move> getMoveList() {
-        return new HashMap<>(moveList);
+    public RealmList<String> getMoveList() {
+        return moveList;
     }
-    public HashMap<String,Move> getMoveList(boolean change) {
-        return change?moveList:new HashMap<>(moveList);
-    }
-    public void setMoveList(HashMap<String,Move> moveList) {
-        this.moveList = new HashMap<>(moveList);
+
+    public void setMoveList(RealmList<String> moveList) {
+        this.moveList = moveList;
     }
 
     public void addMove(Move move){
-        this.moveList.put(move.getId(),move);
+        this.moveList.add(move.getId());
     }
 
-    public HashMap<String,ArrayList<String>> getHyperlinkList() {
-        return new HashMap<>(hyperlinkList);
-    }
-    public HashMap<String,ArrayList<String>> getHyperlinkList(boolean change) {
-        return change?hyperlinkList: new HashMap<>(hyperlinkList);
+    public RealmList<String> getHyperlinkList() {
+        return hyperlinkList;
     }
 
-    public void setHyperlinkList(HashMap<String,ArrayList<String>> hyperlinkList) {
-        this.hyperlinkList = new HashMap<>(hyperlinkList);
+    public void setHyperlinkList(RealmList<String> hyperlinkList) {
+        this.hyperlinkList = hyperlinkList;
     }
-    public void addHyperLink(String key, ArrayList<String> hyperLink){
-        this.hyperlinkList.put(key, hyperLink);
+    public void addHyperLink(String varNameHyperLink){
+        this.hyperlinkList.add(varNameHyperLink);
     }
 
     public String getShareCode() {
@@ -196,19 +156,14 @@ public class Theme implements Serializable {
         this.shareCode = shareCode;
     }
 
-    public HashMap<String, String> getExtraVar() {
-        return new HashMap<>(extraVar);
+    public RealmList<String> getExtraVar() {
+        return extraVar;
     }
-    public HashMap<String, String> getExtraVar(boolean change) {
-        return change?extraVar:new HashMap<>(extraVar);
+    public void setExtraVar(RealmList<String> extraVar) {
+        this.extraVar = extraVar;
     }
-
-
-    public void setExtraVar(HashMap<String, String> extraVar) {
-        this.extraVar = new HashMap<>(extraVar);
-    }
-    public void addExtraVar(String varName, String value){
-        this.extraVar.put(varName,value);
+    public void addExtraVar(String varNameValue){
+        this.extraVar.add(varNameValue);
     }
 
 }

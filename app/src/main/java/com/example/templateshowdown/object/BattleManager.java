@@ -3,9 +3,10 @@ package com.example.templateshowdown.object;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import io.realm.RealmObject;
 import okhttp3.internal.Internal;
 
-public class BattleManager { //feed strings and grab monsters involved to manage everything that happens in battle
+public class BattleManager  extends RealmObject { //feed strings and grab monsters involved to manage everything that happens in battle
     static private HashMap<String, Monster> monsterInvolved = new HashMap<>();
 
     static private HashMap<String, HashMap<String,String>> monsterUsePoint = new HashMap<>();

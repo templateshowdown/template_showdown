@@ -11,21 +11,24 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
-public class User implements Serializable {
-    private String userName;
-    private String password;
-    private HashMap<String,Theme> themeList = new HashMap<>();
-    public Theme temporaryTheme = new Theme();
-    private HashMap<String, String> extraVar = new HashMap<>();
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-    public HashMap<String, Theme> getThemeList() {
-        return new HashMap<>(themeList);
+public class User extends RealmObject implements Serializable {
+    @PrimaryKey
+    private String userName;
+
+    private String password;
+    public RealmList<String> themeList = new RealmList<>();
+    public String temporaryTheme;
+    private RealmList<String> extraVar = new RealmList<>();
+
+    public RealmList<String> getThemeList() {
+        return themeList;
     }
-    public HashMap<String, Theme> getThemeList(boolean change) {
-        return change?themeList:new HashMap<>(themeList);
-    }
-    public void setThemeList(HashMap<String, Theme> themeList) {
-        this.themeList = new HashMap<>(themeList);
+    public void setThemeList(RealmList<String> themeList) {
+        this.themeList = themeList;
     }
 
     public String getUserName() {
@@ -46,26 +49,22 @@ public class User implements Serializable {
 
 
     public void addTheme(Theme theme){
-        this.themeList.put(theme.getId(),theme);
+        this.themeList.add(theme.getId());
     }
     public void deleteTheme(Theme theme){
-        if(this.themeList.containsKey(theme.getId())){
+        if(this.themeList.contains(theme.getId())){
             this.themeList.remove(theme.getId());
         }
-
     }
 
-    public HashMap<String, String> getExtraVar() {
-        return new HashMap<>(extraVar);
-    }
-    public HashMap<String, String> getExtraVar(boolean change) {
-        return change?extraVar: new HashMap<>(extraVar);
+    public RealmList<String> getExtraVar() {
+        return extraVar;
     }
 
-    public void setExtraVar(HashMap<String, String> extraVar) {
-        this.extraVar = new HashMap<>(extraVar);
+    public void setExtraVar(RealmList<String> extraVar) {
+        this.extraVar = extraVar;
     }
-    public void addExtraVar(String varName, String value){
-        this.extraVar.put(varName,value);
+    public void addExtraVar(String varNameValue){
+        this.extraVar.add(varNameValue);
     }
 }

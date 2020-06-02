@@ -1,22 +1,19 @@
 package com.example.templateshowdown.object;
 import java.io.Serializable;
 import java.util.HashMap;
-public class Type implements Serializable {
+
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
+public class Type  extends RealmObject implements Serializable {
+    @PrimaryKey
     private String name;
     private Integer color;
-    private HashMap<String, String> attacking = new HashMap<>();
-    private HashMap<String, String> defending = new HashMap<>();
+    private RealmList<String> attacking = new RealmList<String> ();
+    private RealmList<String>  defending = new RealmList<String> ();
     private String id;
-    private HashMap<String, String> extraVar = new HashMap<>();
-    public Type(){ }
-    public Type(Type type){
-        this.name = type.name;
-        this.color = type.color;
-        this.attacking = new HashMap<>(type.attacking);
-        this.defending = new HashMap<>(type.defending);
-        this.id = type.id;
-        this.extraVar = new HashMap<>(type.extraVar);
-    }
+    private RealmList<String>  extraVar = new RealmList<String>();
 
     public String getId() {
         return id;
@@ -42,46 +39,35 @@ public class Type implements Serializable {
         this.color = color;
     }
 
-    public HashMap<String, String> getAttacking() {
-        return new HashMap<>(attacking);
-    }
-    public HashMap<String, String> getAttacking(boolean change) {
-        return change?attacking:new HashMap<>(attacking);
+    public RealmList<String>  getAttacking() {
+        return attacking;
     }
 
-    public void setAttacking(HashMap<String, String> attacking) {
-        this.attacking = new HashMap<>(attacking);
+    public void setAttacking(RealmList<String>  attacking) {
+        this.attacking = attacking;
     }
-    public void addAttacking(String typeId, String typeEffectiveness){
-        attacking.put(typeId,typeEffectiveness);
-    }
-
-    public HashMap<String, String> getDefending() {
-        return new HashMap<>(defending);
-    }
-    public HashMap<String, String> getDefending(boolean change) {
-        return change?defending:new HashMap<>(defending);
-    }
-    public void setDefending(HashMap<String, String> defending) {
-        this.defending = new HashMap<>(defending);
-    }
-    public void addDefending(String typeId, String typeEffectiveness){
-        defending.put(typeId,typeEffectiveness);
+    public void addAttacking(String typeIdEffectiveness){
+        attacking.add(typeIdEffectiveness);
     }
 
-    public HashMap<String, String> getExtraVar() {
-        return new HashMap<>(extraVar);
+    public RealmList<String> getDefending() {
+        return defending;
     }
-    public HashMap<String, String> getExtraVar(boolean change) {
-        return change?extraVar:new HashMap<>(extraVar);
+    public void setDefending(RealmList<String> defending) {
+        this.defending = defending;
     }
-    public void setExtraVar(HashMap<String, String> extraVar) {
-        this.extraVar = new HashMap<>(extraVar);
-    }
-    public void addExtraVar(String varName, String value){
-        this.extraVar.put(varName,value);
+    public void addDefending(String typeIdEffectiveness){
+        defending.add(typeIdEffectiveness);
     }
 
-
+    public RealmList<String> getExtraVar() {
+        return extraVar;
+    }
+    public void setExtraVar(RealmList<String> extraVar) {
+        this.extraVar = extraVar;
+    }
+    public void addExtraVar(String varNameValue){
+        this.extraVar.add(varNameValue);
+    }
 
 }

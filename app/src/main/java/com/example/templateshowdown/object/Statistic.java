@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Statistic {
+import io.realm.RealmObject;
+
+public class Statistic  extends RealmObject {
     private HashMap<String, ArrayList<String>> monsterStats = new HashMap<>();
     private ArrayList<String> statsNameList = new ArrayList<>();
     private ArrayList<String> statsDescriptionList = new ArrayList<>();
