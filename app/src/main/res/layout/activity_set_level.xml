@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SetLevelActivity">
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SET LEVEL EVENT"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.03" />
+
+    <TextView
+        android:id="@+id/textViewLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Level:"
+        android:textSize="20dp"
+        android:singleLine="true"
+        android:inputType="number"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="30dp" />
+
+    <EditText
+        android:id="@+id/editTextLevel"
+        android:layout_width="60dp"
+        android:layout_height="50dp"
+        app:layout_constraintLeft_toRightOf="@id/textViewLevel"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle"
+        android:inputType="number"
+        android:layout_marginTop="20dp"
+        android:maxLength="3"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:textSize="20dp"
+        />
+    <Spinner
+        android:id="@+id/spinnerEventType"
+        android:layout_width="350dp"
+        android:layout_height="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/textViewLevel"/>
+    <Spinner
+        android:id="@+id/spinnerEventVariable"
+        android:layout_width="350dp"
+        android:layout_height="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spinnerEventType"/>
+    <Button
+        android:id="@+id/buttonAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ADD"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/buttonRemove"
+        app:layout_constraintTop_toBottomOf="@id/spinnerEventVariable"
+        />
+    <Button
+        android:id="@+id/buttonRemove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="REMOVE"
+        app:layout_constraintLeft_toRightOf="@id/buttonAdd"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spinnerEventVariable"
+        />
+
+
+    <ScrollView
+        android:background="@drawable/custom_border"
+        android:id="@+id/listViewLevelEvent"
+        android:layout_width="320dp"
+        android:layout_height="400dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonAdd"
+        android:fadeScrollbars="false"
+        android:isScrollContainer="false">
+        <LinearLayout
+            android:id="@+id/linearLayoutLevelEvent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:orientation="vertical">
+        </LinearLayout>
+
+    </ScrollView>
+    <Button
+        android:id="@+id/buttonConfirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:text="Confirm"
+        android:textSize="20dp"
+        android:layout_marginBottom="10dp"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditTypeActivity">
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="EDIT TYPE"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.03" />
+
+    <TextView
+        android:id="@+id/textViewName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="30dp"
+        android:text="Name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
+
+    <EditText
+        android:id="@+id/editTextName"
+        android:layout_width="350dp"
+        android:layout_height="40dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:singleLine="true"
+        app:layout_constraintTop_toBottomOf="@+id/textViewName"></EditText>
+
+<Button
+    android:id="@+id/buttonSelectColor"
+    android:layout_marginLeft="30dp"
+    android:layout_marginTop="40dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Select Color"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/editTextName"/>
+<ImageView
+    android:id="@+id/imageViewColorSelected"
+    android:layout_width="120dp"
+    android:layout_height="20dp"
+    android:layout_marginLeft="30dp"
+    app:layout_constraintTop_toBottomOf="@id/buttonSelectColor"
+    app:layout_constraintLeft_toLeftOf="parent"
+    android:background="#FFFFFF"
+    />
+    <net.margaritov.preference.colorpicker.ColorPickerView
+        android:id="@+id/colorPicker"
+        alphaSlider="true"
+        android:layout_width="240dp"
+        android:layout_height="140dp"
+        android:layout_marginLeft="30dp"
+        app:layout_constraintLeft_toRightOf="@id/buttonSelectColor"
+        app:layout_constraintTop_toBottomOf="@id/editTextName" />
+    <ImageView
+        android:id="@+id/imageViewColorPreview"
+        android:layout_width="20dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/editTextName"
+        app:layout_constraintLeft_toRightOf="@id/colorPicker"
+        android:background="#FFFFFF"
+        />
+    <TextView
+        android:id="@+id/textViewEffectiveness"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="30dp"
+        android:text="Effectiveness  Attacking:Defending"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="20dp"
+        app:layout_constraintTop_toBottomOf="@id/colorPicker" />
+
+    <ScrollView
+        android:background="@drawable/custom_border"
+        android:id="@+id/listViewEffectiveness"
+        android:layout_width="320dp"
+        android:layout_height="280dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/textViewEffectiveness"
+        android:fadeScrollbars="false"
+        android:isScrollContainer="false">
+        <LinearLayout
+            android:id="@+id/linearLayoutEffectiveness"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:orientation="vertical">
+        </LinearLayout>
+
+    </ScrollView>
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/buttonDelete"
+        android:text="CONFIRM"
+        android:textSize="20dp"
+        android:layout_marginBottom="10dp"
+        />
+    <Button
+        android:id="@+id/buttonDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/buttonSave"
+        app:layout_constraintRight_toRightOf="parent"
+        android:text="DELETE"
+        android:textSize="20dp"
+        android:layout_marginBottom="10dp"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

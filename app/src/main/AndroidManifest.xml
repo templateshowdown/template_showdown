@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.templateshowdown">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <application
+        android:name="com.example.templateshowdown.object.MyApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.NoActionBar">
+        <activity android:name=".MainActivity_">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".SelectThemeActivity_" android:windowSoftInputMode="adjustPan" >
+
+        </activity>
+        <activity android:name=".SelectTypeActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".SelectMoveActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".SelectMonsterActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".SelectStoryActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".EditThemeActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".EditTypeActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".EditMoveActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".EditMonsterActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".EditStoryActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".EditEffectActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".SetLevelActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".SetImageActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".PlayThemeActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".BattleOptionActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".MonsterOptionActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".SelectLoadoutActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".EditLoadoutActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+        <activity android:name=".BattleSceneActivity_" android:windowSoftInputMode="adjustPan" >
+        </activity>
+    </application>
+
+</manifest>

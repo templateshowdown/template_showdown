@@ -1,0 +1,416 @@
+<resources>
+    <string-array name="battle_type_list">
+        <item>Single</item>
+        <!--<item>Double</item>
+        <item>Triple</item>-->
+    </string-array>
+
+    <string-array name="effect_name_list">
+        <item>Special</item>
+        <item>Drain</item>
+        <item>Opponent Statistic Change</item>
+        <item>User Statistic Change</item>
+        <item>Multiple Hit</item>
+        <item>Stored Counter</item>
+        <item>Trap</item>
+        <item>Status Change</item>
+        <item>Type Change</item>
+        <item>Counter</item>
+
+        <item>Critical</item>
+        <item>Wait and Execute</item>
+        <item>Lock Move</item>
+        <item>Recoil Percentage</item>
+        <item>Fixed Damage</item>
+        <item>Status Requirement</item>
+        <item>Status Advantage</item>
+        <item>Recoil Fixed</item>
+        <item>Instant KO</item>
+        <item>Statistic requirement</item>
+
+        <item>Transform</item>
+        <item>Reset Statistic Change</item>
+        <item>Recoil On Miss</item>
+        <item>Flee</item>
+        <item>Shield</item>
+        <item>Random</item>
+        <item>Copy And Store Move</item>
+        <item>Copy Move</item>
+        <item>Protect Statistic Change</item>
+        <item>Coin</item>
+
+        <item>Level Dependent Damage</item>
+        <item>Berserk</item>
+        <item>Heal Percentage</item>
+        <item>Force Switch</item>
+        <item>Move Omega</item>
+        <item>Decoy</item>
+        <item>Percentile Damage</item>
+        <item>Bullseye</item>
+        <item>Heal Fixed</item>
+        <item>Status After Move</item>
+    </string-array>
+
+    <string-array name="hidden_name_list">
+        <item>Physical</item> <!--Nope-->
+        <item>Desperation Move</item> <!--Nope-->
+    </string-array>
+
+    <string-array name="effect_description_list">
+        <item>Deal Special Attack damage instead of the default Physical Attack damage.</item>
+        <item>Drain %s times of damage dealt.</item>
+        <item>%s percent chance of %s %s statistic of user by %s tier.</item>
+        <item>%s percent chance of %s %s statistic of opponent by %s tier.</item>
+        <item>Hit %s to %s times.</item>
+        <item>Wait for %s to %s turn and deal %s times of damage received after waiting.</item>
+        <item>Trap opponent and deal %s amount of damage for %s to %s turn.</item>
+        <item>%s percent chance of inflicting %s status to %s.</item>
+        <item>Change user type to type of the user\'s first move.</item>
+        <item>When hit by %s attack, counter with %s times of damage dealt to user.</item>
+
+        <item>High chance of critical hit.</item>
+        <item>The user %s on the first turn of the move.</item>
+        <item>Opponent cannot use the previously used move for %s to %s turn</item>
+        <item>User takes %s times of damage given.</item>
+        <item>Always inflict %s amount of damage.</item>
+        <item>The move will only hit if the opponent has %s status effect.</item>
+        <item>Deal %s times damage on opponent with %s status effect.</item>
+        <item>User lose %s amount of health after inflicting damage.</item>
+        <item>Deplete the opponent health to zero.</item>
+        <item>The move will only hit if the user has %s %s statistic then the opponent.</item>
+
+        <item>Transform into your opponent and gain their move set.</item>
+        <item>Reset all statistic change.</item>
+        <item>Lose %s percent of the potential move damage when the move miss.</item>
+        <item>Flee battle.</item>
+        <item>Half damage from %s attack for %s to %s turn.</item>
+        <item>Randomly use any move.</item>
+        <item>Replace this move with opponent’s previously used moves with %s use point.</item>
+        <item>Use the opponent’s last used move.</item>
+        <item>Deny statistic change caused by others.</item>
+        <item>Get %s amount of additional money after battle end.</item>
+
+        <item>Deal damage range base on user’s level.</item>
+        <item>Once the move is selected,the user can only use this move until the user leave the battle.</item>
+        <item>Recover %s percent of total health.</item>
+        <item>Force opponent to switch randomly.</item>
+        <item>Does nothing.</item>
+        <item>Create a decoy using %s percent of total health.</item>
+        <item>Deplete %s percent of opponent\'s health.</item>
+        <item>Never miss.</item>
+        <item>Recover %s amount of health.</item>
+        <item>Inflict %s status on self after the move is fully executed.</item>
+    </string-array>
+
+    <string-array name="hide_variable_list">
+        <item>0000</item>
+        <item>1000</item>
+        <item>1221</item>
+        <item>1221</item>
+        <item>1100</item>
+        <item>1110</item>
+        <item>1110</item>
+        <item>1220</item>
+        <item>0000</item>
+        <item>2100</item>
+
+        <item>0000</item>
+        <item>2000</item>
+        <item>1100</item>
+        <item>1000</item>
+        <item>1000</item>
+        <item>2000</item>
+        <item>1200</item>
+        <item>1000</item>
+        <item>0000</item>
+        <item>2200</item>
+
+        <item>0000</item>
+        <item>0000</item>
+        <item>1000</item>
+        <item>0000</item>
+        <item>2110</item>
+        <item>0000</item>
+        <item>1000</item>
+        <item>0000</item>
+        <item>0000</item>
+        <item>1000</item>
+
+        <item>0000</item>
+        <item>0000</item>
+        <item>1000</item>
+        <item>0000</item>
+        <item>0000</item>
+        <item>1000</item>
+        <item>1000</item>
+        <item>0000</item>
+        <item>1000</item>
+        <item>2000</item>
+    </string-array>
+
+    <string-array name="spinner_variable_list1">
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item>Physical,Special</item>
+
+        <item></item>
+        <item>Fly,Dig,Charge</item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item>Higher,Lower</item>
+
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item>Physical,Special</item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+    <item>Confused,Paralyse,Sleep,Frozen,Burnt,Poison,Venom,Underground,Airborne,Trapped,Seeded</item>
+    </string-array>
+
+    <string-array name="spinner_variable_list2">
+        <item></item>
+        <item></item>
+        <item>Increasing,Decreasing</item>
+        <item>Increasing,Decreasing</item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item>Confused,Paralyse,Sleep,Frozen,Burnt,Poison,Venom,Underground,Airborne,Trapped,Seeded</item>
+        <item></item>
+        <item></item>
+
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item>Confused,Paralyse,Sleep,Frozen,Burnt,Poison,Venom,Underground,Airborne,Trapped,Seeded</item>
+        <item></item>
+        <item></item>
+        <item>Attack,Defense,Special Attack,Special Defense,Speed,HP,Evasion,Accuracy,Level,MP</item>
+
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+    </string-array>
+
+    <string-array name="spinner_variable_list3">
+        <item></item>
+        <item></item>
+        <item>Attack,Defense,Special Attack,Special Defense,Speed,Evasion,Accuracy</item>
+        <item>Attack,Defense,Special Attack,Special Defense,Speed,Evasion,Accuracy</item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item>User,Opponent</item>
+        <item></item>
+        <item></item>
+
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+    </string-array>
+
+    <string-array name="spinner_variable_list4">
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item></item>
+    </string-array>
+
+    <string-array name="statistic_name_list">
+        <item>Attack</item>
+        <item>Defense</item>
+        <item>Special Attack</item>
+        <item>Special Defense</item>
+        <item>Speed</item>
+        <item>Hit Point</item>
+        <item>Evasion</item>
+        <item>Accuracy</item>
+        <item>Luck</item>
+        <item>Experience</item>
+        <item>Move Point</item>
+        <item>Level</item>
+    </string-array>
+
+    <string-array name="statistic_description_list">
+        <item>Determine the power of physical attack.</item>
+        <item>Determine the resistance against physical attack.</item>
+        <item>Determine the power of special attack.</item>
+        <item>Determine the resistance against special attack.</item>
+        <item>Determine the order of actions in battle.</item>
+        <item>Determine the amount of damage that can be taken.</item>
+        <item>Determine the chance of avoiding an opponent\'s move.</item>
+        <item>Determine the chance of hitting an opponent with a move.</item>
+        <item>Determine the chance of critical hit.</item>
+        <item>Determine the level.</item>
+        <item>Determine the amount of move one can use.</item>
+        <item>Determine the overall statistic.</item>
+    </string-array>
+
+    <string-array name="status_name_list">
+        <item>Confused</item>
+        <item>Paralyse</item>
+        <item>Sleep</item>
+        <item>Frozen</item>
+        <item>Burnt</item>
+        <item>Poison</item>
+        <item>Venom</item>
+        <item>Trapped</item>
+        <item>Leeched</item>
+        <item>Stunned</item>
+        <item>Underground</item>
+        <item>Airborne</item>
+        <item>Block</item>
+        <item>Barrier</item>
+        <item>Berserk</item>
+        <item>Decoy</item>
+        <item>Locked</item>
+    </string-array>
+
+    <string-array name="status_description_list">
+        <item>Victim may inflict damage upon itself instead of using their assigned move until confusion wears off.</item>
+        <item>Victim may not be able to use their assigned move until paralysis wears off.</item>
+        <item>Victim is unable to use their assigned move until the victim wakes up.</item>
+        <item>Victim is unable to use their assigned move until the ice thaw off.</item>
+        <item>Victim take damage from burning every turn, the victim\'s physical attack is also halved.</item>
+        <item>Victim take damage from poison every turn.</item>
+        <item>Victim take damage from venom every turn, the damage from venom increase every turn.</item>
+        <item>Victim is unable to use their assigned move while taking every turn.</item>
+        <item>Victim\'s hit point is drained by their opponent every turn.</item>
+        <item>Victim is unable to carry out any action for one turn.</item>
+        <item>Reposition underground for one turn.</item>
+        <item>Reposition into the air for one turn.</item>
+        <item>Double the physical defense when attacked by physical attack.</item>
+        <item>Double the special defense when attacked by special attack.</item>
+        <item>Continuously used the last assigned move.</item>
+        <item>Take damage in the place of the user.</item>
+        <item>Victim is unable to use their previously used move for several turn.</item>
+    </string-array>
+
+    <string-array name="event_type_list">
+        <item>Move</item>
+        <item>Monster</item>
+    </string-array>
+    <string name="app_name">Template Showdown</string>
+    <string name="start_menu_play_button">PLAY</string>
+    <string name="start_menu_edit_button">EDIT</string>
+    <string name="start_menu_watch_button">WATCH</string>
+    <string name="start_menu_options_button">OPTIONS</string>
+    <string name="select_theme_title">SELECT THEME</string>
+</resources>

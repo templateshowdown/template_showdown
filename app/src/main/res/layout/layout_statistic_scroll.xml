@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+    android:background="@drawable/custom_border"
+        >
+        <TextView
+            android:id="@+id/textViewStatisticName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="New Statistic"/>
+        <SeekBar
+            android:id="@+id/seekBarTier"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="10dp"
+            android:max="10"
+            android:progress="5"
+            android:thumb="@drawable/thumb_image"
+            />
+        <TextView
+            android:id="@+id/textViewDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/seekBarTier"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:text="Statistic description"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
