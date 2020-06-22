@@ -14,6 +14,7 @@ import java.io.ObjectOutputStream;
 public class SaveLoadData extends Application { //using file io stream for now, will update to better method for server friendliness in the future
     public static User userData;
     public static User database;
+    public static TempVariable tempData;
     public void saveUser(User userData, Context test) throws IOException  {
         File saveData = new File(test.getFilesDir(),"userData.txt");
         this.userData = userData;

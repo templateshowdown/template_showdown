@@ -17,12 +17,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.templateshowdown.object.SaveLoadData;
+import com.example.templateshowdown.object.Theme;
 import com.example.templateshowdown.object.User;
 
 import org.androidannotations.annotations.*;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
+
 @EActivity (R.layout.activity_select_theme)
 public class SelectThemeActivity  extends AppCompatActivity {
+
     @ViewById
     LinearLayout linearLayoutRecent;
     @ViewById
@@ -30,13 +36,14 @@ public class SelectThemeActivity  extends AppCompatActivity {
     @ViewById
     Button buttonNew;
     private String message;
-
+    private Realm mRealm;
     public static String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        mRealm = Realm.getDefaultInstance();
     }
 
     @Override
@@ -47,7 +54,7 @@ public class SelectThemeActivity  extends AppCompatActivity {
             buttonNew.setVisibility(View.INVISIBLE);
         }
         //User user = new User(); fetch user class from server
-        loadThemeList(SaveLoadData.userData); //populate recent theme list based on user's theme list
+        loadThemeList(); //populate recent theme list based on user's theme list
         editTextSearch.addTextChangedListener(new TextWatcher() {
 
             public void afterTextChanged(Editable s) {
@@ -62,27 +69,25 @@ public class SelectThemeActivity  extends AppCompatActivity {
                 searchThemeList();
             }
         });
-
-
-        /*for(int i = 0; i<4;i++) {
-            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.layout_item_scroll, null);
-            TextView textViewThemeName = view.findViewById(R.id.textViewThemeName);
-            final Button buttonTheme = view.findViewById(R.id.buttonTheme);
-            buttonTheme.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    buttonTheme.setText("CLICKED");
-                }
-            });
-            textViewThemeName.setText("item"+i);
-            linearLayoutRecent.setOrientation(LinearLayout.VERTICAL);
-            linearLayoutRecent.addView(view);
-        }*/
     }
+    private String getThemeName(final String id){
+        final String[] themeName = new String[1];
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<Theme> results = realm.where(Theme.class).findAll();
+                for (Theme theme : results) {
+                    if(theme.getId().equals(id)){
+                        themeName[0] = theme.getName();
+                    }
+                }
+            }
 
-    private void loadThemeList(User user){
-        for(String key : SaveLoadData.userData.getThemeList().keySet()) {
+        });
+        return themeName[0];
+    }
+    private void loadThemeList(){
+        for(String key : SaveLoadData.userData.getThemeList()) {
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.layout_item_scroll, null);
             TextView textViewThemeName = view.findViewById(R.id.textViewItemName);
@@ -96,7 +101,7 @@ public class SelectThemeActivity  extends AppCompatActivity {
 
                 }
             });
-            textViewThemeName.setText(user.getThemeList().get(key).getName());
+            textViewThemeName.setText(getThemeName(key));
             linearLayoutRecent.setOrientation(LinearLayout.VERTICAL);
             linearLayoutRecent.addView(view);
         }
@@ -107,8 +112,8 @@ public class SelectThemeActivity  extends AppCompatActivity {
         if(!editTextSearch.getText().toString().trim().isEmpty()) {
             String searchQuery = editTextSearch.getText().toString();
             linearLayoutSearch.removeAllViews();
-            for (String key : SaveLoadData.database.getThemeList().keySet()) {
-                if (SaveLoadData.database.getThemeList().get(key).getName().contains(searchQuery)) {
+            for (String key : SaveLoadData.database.getThemeList()) {
+                if (getThemeName(key).contains(searchQuery)) {
                     LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     View view = inflater.inflate(R.layout.layout_item_scroll, null);
                     TextView textViewThemeName = view.findViewById(R.id.textViewItemName);
@@ -118,7 +123,8 @@ public class SelectThemeActivity  extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             //add this theme to the user's recent theme list first then...
-                            SaveLoadData.userData.getThemeList(true).put(keyData,SaveLoadData.database.getThemeList().get(keyData));
+                            SaveLoadData.userData.getThemeList().remove(keyData);
+                            SaveLoadData.userData.getThemeList().add(keyData);
                             SaveLoadData saveLoadData = new SaveLoadData();
                             try {
                                 saveLoadData.saveUser(SaveLoadData.userData, getApplication());
@@ -129,7 +135,7 @@ public class SelectThemeActivity  extends AppCompatActivity {
 
                         }
                     });
-                    textViewThemeName.setText(SaveLoadData.database.getThemeList().get(key).getName());
+                    textViewThemeName.setText(getThemeName(key));
                     linearLayoutSearch.setOrientation(LinearLayout.VERTICAL);
                     linearLayoutSearch.addView(view);
                 }

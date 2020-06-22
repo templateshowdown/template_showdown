@@ -19,44 +19,53 @@ import android.widget.TextView;
 
 import com.example.templateshowdown.object.SaveLoadData;
 import com.example.templateshowdown.object.Theme;
+import com.example.templateshowdown.object.Type;
 import com.example.templateshowdown.object.User;
 
 import org.androidannotations.annotations.*;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
+
 @EActivity (R.layout.activity_select_type)
 public class SelectTypeActivity extends AppCompatActivity {
     @ViewById
     LinearLayout linearLayoutExisting;
     private String message;
     public static String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
-
+    private Realm mRealm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         message = intent.getStringExtra(EditThemeActivity.EXTRA_MESSAGE);
+        mRealm = Realm.getDefaultInstance();
     }
 
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if(SaveLoadData.userData.temporaryTheme.getTypeList().size()!=0){
+        if(SaveLoadData.tempData.temporaryTheme.getTypeList()!=null && SaveLoadData.tempData.temporaryTheme.getTypeList().size()!=0){
             loadTypeList();
         }
     }
+
+
+
     private void loadTypeList(){
-        for (String key : SaveLoadData.userData.temporaryTheme.getTypeList().keySet()) {
+        for (Type typeKey : SaveLoadData.tempData.temporaryTheme.getTypeList()) {
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.layout_item_scroll, null);
             TextView textViewItemName = view.findViewById(R.id.textViewItemName);
             final Button buttonChoose = view.findViewById(R.id.buttonChoose);
-            final String keyData = key;
+            final String keyData = typeKey.getId();
             buttonChoose.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     buttonTypeClick(keyData);
                 }
             });
-            textViewItemName.setText(SaveLoadData.userData.temporaryTheme.getTypeList().get(key).getName());
+            textViewItemName.setText(typeKey.getName());
             linearLayoutExisting.setOrientation(LinearLayout.VERTICAL);
             linearLayoutExisting.addView(view);
         }

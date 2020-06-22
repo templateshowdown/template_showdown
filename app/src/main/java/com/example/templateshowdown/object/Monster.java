@@ -8,22 +8,32 @@ import java.util.List;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 public class Monster extends RealmObject implements Serializable {
-    @PrimaryKey
+    public static final String PROPERTY_ID = "id";
+    public static final String PROPERTY_NAME = "name";
+
+    @PrimaryKey @Required
+    private String id;
+
     private String name;
+
+    private String battleId;
 
     private RealmList<String> types = new RealmList<String>();
     private String hyperLink1; // front
     private String hyperLink2; // back
-    private String id;
-    private RealmList<String> monsterStats = new RealmList<String>();
-    private RealmList<String> extraVar = new RealmList<String>();
+
+    public RealmList<RealmStats> monsterStats = new RealmList<>();
+    public RealmList<RealmHash> extraVar = new RealmList<RealmHash>();
     //extraVar String Level
     //extraVar String HP
     //extraVar String HP
-    public RealmList<String> tempLevelEvent = new RealmList<String>();
-    private RealmList<String> levelEventList = new RealmList<String>();
+    public RealmList<UsePoint> usePoints = new RealmList<>();
+
+    public RealmList<Status> statuses = new RealmList<>();
+    private RealmList<LevelEvent> levelEventList = new RealmList<>();
     private RealmList<String> moveList = new RealmList<String>();
     private String battleState = " ";
     //First String id
@@ -82,11 +92,11 @@ public class Monster extends RealmObject implements Serializable {
         this.hyperLink2 = hyperLink2;
     }
 
-    public RealmList<String> getLevelEventList() {
+    public RealmList<LevelEvent> getLevelEventList() {
         return levelEventList;
     }
 
-    public void setLevelEventList(RealmList<String> levelEventList) {
+    public void setLevelEventList(RealmList<LevelEvent> levelEventList) {
         this.levelEventList = levelEventList;
     }
 
@@ -105,24 +115,87 @@ public class Monster extends RealmObject implements Serializable {
         this.moveList.remove(id);
     }
 
-    public RealmList<String> getExtraVar() {
+    public RealmList<RealmHash> getExtraVar() {
         return extraVar;
     }
 
-    public void setExtraVar(RealmList<String> extraVar) {
+    public void setExtraVar(RealmList<RealmHash> extraVar) {
         this.extraVar = extraVar;
     }
-    public void addExtraVar(String varNameValue){
-        this.extraVar.add(varNameValue);
+
+    public void addExtraVar(RealmHash realmHash){
+        for(RealmHash key:extraVar){
+            if(key.index.equals(realmHash.index)){
+                extraVar.remove(key);
+            }
+        }
+        this.extraVar.add(realmHash);
+    }
+    public void removeExtraVar(RealmHash realmHash){
+        for(RealmHash key:extraVar){
+            if(key.index.equals(realmHash.index)){
+                extraVar.remove(key);
+            }
+        }
+    }
+    public RealmHash getExtraVarRealmHash(String index){
+        for(RealmHash key:extraVar){
+            if(key.index.equals(index)){
+                return key;
+            }
+        }
+        return new RealmHash();
     }
 
 
-    public RealmList<String> getMonsterStats() {
+
+    public RealmList<RealmStats> getMonsterStats() {
         return monsterStats;
     }
 
-    public void setMonsterStats(RealmList<String> monsterStats) {
+    public void setMonsterStats(RealmList<RealmStats> monsterStats) {
         this.monsterStats = monsterStats;
+    }
+    public RealmStats getRealmMonsterStat(String index){
+        for(RealmStats realmStats:monsterStats){
+            if(realmStats.name.equals(index)){
+                return realmStats;
+            }
+        }
+        return new RealmStats();
+    }
+
+    public LevelEvent getLevelEvent(String id){
+        for(LevelEvent key: levelEventList){
+            if(key.getEventVariableId().equals(id)){
+                return key;
+            }
+        }
+        return new LevelEvent();
+    }
+
+    public void addLevelEvent(LevelEvent levelEvent){
+        for(LevelEvent key: levelEventList){
+            if(key.getId().equals(levelEvent.getId())){
+                levelEventList.remove(key);
+            }
+        }
+        levelEventList.add(levelEvent);
+    }
+    public void removeLevelEvent(LevelEvent levelEvent){
+        for(LevelEvent key: levelEventList){
+            if(key.getId().equals(levelEvent.getId())){
+                levelEventList.remove(key);
+            }
+        }
+    }
+
+    public String getBattleId() {
+        return battleId;
+    }
+
+    public void setBattleId(String battleId) {
+        this.battleId = battleId;
     }
 
 }

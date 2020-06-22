@@ -18,8 +18,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.templateshowdown.object.Move;
 import com.example.templateshowdown.object.SaveLoadData;
 import com.example.templateshowdown.object.Theme;
+import com.example.templateshowdown.object.Type;
 import com.example.templateshowdown.object.User;
 
 import org.androidannotations.annotations.*;
@@ -41,29 +43,30 @@ public class SelectMoveActivity extends AppCompatActivity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if(SaveLoadData.userData.temporaryTheme.getMoveList()!= null && SaveLoadData.userData.temporaryTheme.getMoveList().size()!=0){
+        if(SaveLoadData.tempData.temporaryTheme.getMoveList()!= null && SaveLoadData.tempData.temporaryTheme.getMoveList().size()!=0){
             loadMoveList();
         }
     }
     private void loadMoveList(){
-        for (String key : SaveLoadData.userData.temporaryTheme.getMoveList().keySet()) {
+        for (Move moveKey : SaveLoadData.tempData.temporaryTheme.getMoveList()) {
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.layout_move_scroll, null);
             TextView textViewMoveName = view.findViewById(R.id.textViewMoveName);
             ImageView imageViewColorType = view.findViewById(R.id.imageViewColorType);
             final Button buttonChoose = view.findViewById(R.id.buttonChoose);
-            final String keyData = key;
+            final String keyData = moveKey.getId();
             buttonChoose.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     buttonMoveClick(keyData);
                 }
             });
-            textViewMoveName.setText(SaveLoadData.userData.temporaryTheme.getMoveList().get(key).getName());
-            if(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.getMoveList().get(key).getTypeId())!=null) {
-                imageViewColorType.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.getMoveList().get(key).getTypeId()).getColor());
+            textViewMoveName.setText(moveKey.getName());
+            if (moveKey.getTypeId()!=null) {
+                imageViewColorType.setBackgroundColor(SaveLoadData.tempData.temporaryTheme.getType(moveKey.getTypeId()).getColor());
+                break;
             }
-            else SaveLoadData.userData.temporaryTheme.getMoveList(true).get(key).setTypeId("");
+
             linearLayoutExisting.setOrientation(LinearLayout.VERTICAL);
             linearLayoutExisting.addView(view);
         }

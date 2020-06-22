@@ -14,14 +14,17 @@ import java.util.List;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 public class User extends RealmObject implements Serializable {
-    @PrimaryKey
-    private String userName;
+    public static final String PROPERTY_NAME = "userName";
 
+    @PrimaryKey @Required
+    private String userName;
+    @Required
     private String password;
+
     public RealmList<String> themeList = new RealmList<>();
-    public String temporaryTheme;
     private RealmList<String> extraVar = new RealmList<>();
 
     public RealmList<String> getThemeList() {

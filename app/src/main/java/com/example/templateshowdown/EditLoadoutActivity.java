@@ -22,6 +22,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.templateshowdown.object.LoadOut;
 import com.example.templateshowdown.object.Monster;
 import com.example.templateshowdown.object.MoveEffect;
 import com.example.templateshowdown.object.MyApplication;
@@ -39,6 +40,9 @@ import java.util.HashMap;
 import java.util.TimeZone;
 
 import javax.xml.parsers.SAXParser;
+
+import io.realm.RealmList;
+
 @EActivity(R.layout.activity_edit_loadout)
 public class EditLoadoutActivity extends AppCompatActivity {
     public static String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
@@ -71,36 +75,30 @@ public class EditLoadoutActivity extends AppCompatActivity {
         gmtDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         gmtDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         if(message.contains("added")){
-            message = SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(0);
-            editTextName.setText( SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(1));
-            editTextIntro.setText( SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(2));
-            editTextWin.setText( SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(3));
-            editTextLose.setText( SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(4));
+            message = SaveLoadData.tempData.tempLoadOut.get(0).getId();
+            editTextName.setText(SaveLoadData.tempData.tempLoadOut.get(0).getName());
+            editTextIntro.setText(SaveLoadData.tempData.tempLoadOut.get(0).getIntro());
+            editTextWin.setText(SaveLoadData.tempData.tempLoadOut.get(0).getWin());
+            editTextLose.setText(SaveLoadData.tempData.tempLoadOut.get(0).getLose());
         }
         else if (message.contains("new")) {
-            SaveLoadData.userData.temporaryTheme.setTempLoadOut(new HashMap<String, Monster>());
+            SaveLoadData.tempData.tempLoadOut.add(0,new LoadOut());
             editTextName.setText("Name");
             editTextIntro.setText("Intro");
             editTextWin.setText("Win");
             editTextLose.setText("Lose");
-            SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).clear();
-            SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).add(0,"");
-            SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).add(1,editTextName.getText().toString().trim());
-            SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).add(2,editTextIntro.getText().toString().trim());
-            SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).add(3,editTextWin.getText().toString().trim());
-            SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).add(4,editTextLose.getText().toString().trim());
+            SaveLoadData.tempData.tempLoadOut.get(0).setId("");
+            SaveLoadData.tempData.tempLoadOut.get(0).setName(editTextName.getText().toString().trim());
+            SaveLoadData.tempData.tempLoadOut.get(0).setIntro(editTextIntro.getText().toString().trim());
+            SaveLoadData.tempData.tempLoadOut.get(0).setWin(editTextWin.getText().toString().trim());
+            SaveLoadData.tempData.tempLoadOut.get(0).setLose(editTextLose.getText().toString().trim());
         }
         else {
-            SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).add(0,message);
-            SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).add(1,SaveLoadData.userData.temporaryTheme.getLoadOutDialogueList().get(message).get(0));
-            SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).add(2,SaveLoadData.userData.temporaryTheme.getLoadOutDialogueList().get(message).get(1));
-            SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).add(3,SaveLoadData.userData.temporaryTheme.getLoadOutDialogueList().get(message).get(2));
-            SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).add(4,SaveLoadData.userData.temporaryTheme.getLoadOutDialogueList().get(message).get(3));
-            SaveLoadData.userData.temporaryTheme.setTempLoadOut(SaveLoadData.userData.temporaryTheme.getLoadOutList().get(message));
-            editTextName.setText( SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(1));
-            editTextIntro.setText( SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(2));
-            editTextWin.setText( SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(3));
-            editTextLose.setText( SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(4));
+            SaveLoadData.tempData.tempLoadOut.add(0,SaveLoadData.tempData.temporaryTheme.getLoadOut(message));
+            editTextName.setText(SaveLoadData.tempData.tempLoadOut.get(0).getName());
+            editTextIntro.setText(SaveLoadData.tempData.tempLoadOut.get(0).getIntro());
+            editTextWin.setText(SaveLoadData.tempData.tempLoadOut.get(0).getWin());
+            editTextLose.setText(SaveLoadData.tempData.tempLoadOut.get(0).getLose());
         }
         loadLoadOut();
     }
@@ -108,17 +106,16 @@ public class EditLoadoutActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(this, SelectLoadoutActivity_.class);
-        intent.putExtra(EXTRA_MESSAGE, SaveLoadData.userData.temporaryTheme.getId());
+        intent.putExtra(EXTRA_MESSAGE, SaveLoadData.tempData.temporaryTheme.getId());
         startActivity(intent);
     }
     @Click(R.id.buttonDelete)
     void buttonDeleteClick(){
-        if(SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(0)!=null){
-            SaveLoadData.userData.temporaryTheme.getLoadOutList(true).remove(SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(0));
-            SaveLoadData.userData.temporaryTheme.getLoadOutDialogueList(true).remove(SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(0));
+        if(SaveLoadData.tempData.tempLoadOut.get(0).getId()!=null){
+            SaveLoadData.tempData.removeLoadOut(SaveLoadData.tempData.tempLoadOut.get(0));
         }
         Intent intent = new Intent(this, SelectLoadoutActivity_.class);
-        intent.putExtra(EXTRA_MESSAGE, SaveLoadData.userData.temporaryTheme.getId());
+        intent.putExtra(EXTRA_MESSAGE, SaveLoadData.tempData.temporaryTheme.getId());
         startActivity(intent);
     }
 
@@ -128,40 +125,32 @@ public class EditLoadoutActivity extends AppCompatActivity {
                 !editTextIntro.getText().toString().trim().equals("")&&
                 !editTextWin.getText().toString().trim().equals("")&&
                 !editTextLose.getText().toString().trim().equals("")) {
-            ArrayList<String> tempDialogue = new ArrayList<>();
-            tempDialogue.add(0, editTextName.getText().toString().trim());
-            tempDialogue.add(1, editTextIntro.getText().toString().trim());
-            tempDialogue.add(2, editTextWin.getText().toString().trim());
-            tempDialogue.add(3, editTextLose.getText().toString().trim());
-            if (SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(0) == null||SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(0).equals("")) {
-                String tempId = SaveLoadData.userData.getUserName() + gmtDateFormat.format(new Date());
-                SaveLoadData.userData.temporaryTheme.getLoadOutList(true).
-                        put(tempId, SaveLoadData.userData.temporaryTheme.getTempLoadOut());
-                SaveLoadData.userData.temporaryTheme.getLoadOutDialogueList(true).
-                        put(tempId, tempDialogue);
+            SaveLoadData.tempData.tempLoadOut.get(0).setName(editTextName.getText().toString().trim());
+            SaveLoadData.tempData.tempLoadOut.get(0).setIntro(editTextIntro.getText().toString().trim());
+            SaveLoadData.tempData.tempLoadOut.get(0).setWin(editTextWin.getText().toString().trim());
+            SaveLoadData.tempData.tempLoadOut.get(0).setLose(editTextLose.getText().toString().trim());
+            if (SaveLoadData.tempData.tempLoadOut.get(0).getId() == null||SaveLoadData.tempData.tempLoadOut.get(0).getId().equals("")) {
+                String tempId = SaveLoadData.tempData.temporaryTheme.getId()+SaveLoadData.userData.getUserName() + gmtDateFormat.format(new Date());
+                SaveLoadData.tempData.tempLoadOut.get(0).setId(tempId);
+                SaveLoadData.tempData.temporaryTheme.addLoadOut(SaveLoadData.tempData.tempLoadOut.get(0));
             }
             else {
-                SaveLoadData.userData.temporaryTheme.getLoadOutList(true).
-                        put(SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(0), SaveLoadData.userData.temporaryTheme.getTempLoadOut());
-                SaveLoadData.userData.temporaryTheme.getLoadOutDialogueList(true).
-                        put(SaveLoadData.userData.temporaryTheme.getTempLoadOutId().get(0), tempDialogue);
+                SaveLoadData.tempData.temporaryTheme.addLoadOut(SaveLoadData.tempData.tempLoadOut.get(0));
             }
-            SaveLoadData.userData.temporaryTheme.getTempLoadOut(true).clear();
-            SaveLoadData.userData.addTheme(SaveLoadData.userData.temporaryTheme);
-            saveUserData();
+            SaveLoadData.tempData.tempLoadOut = new ArrayList<>();
             Intent intent = new Intent(this, SelectLoadoutActivity_.class);
-            intent.putExtra(EXTRA_MESSAGE, SaveLoadData.userData.temporaryTheme.getId());
+            intent.putExtra(EXTRA_MESSAGE, SaveLoadData.tempData.temporaryTheme.getId());
             startActivity(intent);
         }
     }
 
     void loadLoadOut(){
         linearLayoutLoadout.removeAllViews();
-        for(final String key : SaveLoadData.userData.temporaryTheme.getTempLoadOut().keySet()){
+        for(Monster key : SaveLoadData.tempData.tempLoadOut.get(0).getMonsterTeam()){
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.layout_loadout_scroll, null);
             TextView textViewMonsterName = view.findViewById(R.id.textViewMonsterName);
-            textViewMonsterName.setText(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getName());
+            textViewMonsterName.setText(key.getName());
             ImageView imageViewColorType1= view.findViewById(R.id.imageViewColorType1);
             Button buttonFighter = view.findViewById(R.id.buttonFighter);
             buttonFighter.setVisibility(View.GONE);
@@ -171,13 +160,13 @@ public class EditLoadoutActivity extends AppCompatActivity {
             textViewBattleState.setVisibility(View.GONE);
             TextView textViewBattleStateColon = view.findViewById(R.id.textViewBattleStateColon);
             textViewBattleStateColon.setVisibility(View.GONE);
-            if(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getTypes().size()!=0) {
-                imageViewColorType1.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getTypes().get(0)).getColor());
+            if(key.getTypes().size()!=0) {
+                imageViewColorType1.setBackgroundColor(SaveLoadData.tempData.temporaryTheme.getType(key.getTypes().get(0)).getColor());
                 ImageView imageViewColorType2 = view.findViewById(R.id.imageViewColorType2);
-                imageViewColorType2.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getTypes().get(1)).getColor());
+                imageViewColorType2.setBackgroundColor(SaveLoadData.tempData.temporaryTheme.getType(key.getTypes().get(1)).getColor());
             }
             Button buttonChoose = view.findViewById(R.id.buttonChoose);
-            final String keyData = key;
+            final String keyData = key.getId();
             buttonChoose.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -191,23 +180,20 @@ public class EditLoadoutActivity extends AppCompatActivity {
 
     @Click(R.id.buttonAdd)
     void buttonAddClick(){
-        SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).set(1,editTextName.getText().toString().trim());
-        SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).set(2,editTextIntro.getText().toString().trim());
-        SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).set(3,editTextWin.getText().toString().trim());
-        SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).set(4,editTextLose.getText().toString().trim());
+        SaveLoadData.tempData.tempLoadOut.get(0).setName(editTextName.getText().toString().trim());
+        SaveLoadData.tempData.tempLoadOut.get(0).setIntro(editTextIntro.getText().toString().trim());
+        SaveLoadData.tempData.tempLoadOut.get(0).setWin(editTextWin.getText().toString().trim());
+        SaveLoadData.tempData.tempLoadOut.get(0).setLose(editTextLose.getText().toString().trim());
         Intent intent = new Intent(this, MonsterOptionActivity_.class);
         intent.putExtra(EXTRA_MESSAGE, "new");
         startActivity(intent);
     }
 
     void buttonPlayerChooseClick(String key){
-        if(!SaveLoadData.userData.temporaryTheme.getLoadOutList().containsKey(message)){
-            SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).add(0,"");
-        }
-        SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).set(1,editTextName.getText().toString().trim());
-        SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).set(2,editTextIntro.getText().toString().trim());
-        SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).set(3,editTextWin.getText().toString().trim());
-        SaveLoadData.userData.temporaryTheme.getTempLoadOutId(true).set(4,editTextLose.getText().toString().trim());
+        SaveLoadData.tempData.tempLoadOut.get(0).setName(editTextName.getText().toString().trim());
+        SaveLoadData.tempData.tempLoadOut.get(0).setIntro(editTextIntro.getText().toString().trim());
+        SaveLoadData.tempData.tempLoadOut.get(0).setWin(editTextWin.getText().toString().trim());
+        SaveLoadData.tempData.tempLoadOut.get(0).setLose(editTextLose.getText().toString().trim());
         Intent intent = new Intent(this, MonsterOptionActivity_.class);
         intent.putExtra(EXTRA_MESSAGE, "edit," +key);
         startActivity(intent);

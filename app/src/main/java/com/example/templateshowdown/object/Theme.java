@@ -8,26 +8,25 @@ import java.util.List;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 public class Theme extends RealmObject implements Serializable {
-    @PrimaryKey
-    private String name;
-    private RealmList<String> typeList = new RealmList<String>();
-    private RealmList<String> monsterList = new RealmList<String>();
-    private RealmList<String> moveList = new RealmList<String>();
-    private RealmList<String> hyperlinkList = new RealmList<String>(); //store every hyperlink in theme
-    public String tempType;
-    public String tempMonster;
-    public String tempMove;
-    public String tempHyperlink;
-    private String shareCode;
+
+    public static final String PROPERTY_ID = "id";
+    public static final String PROPERTY_NAME = "name";
+
+    @PrimaryKey @Required
     private String id;
+
+    private String name;
+    private RealmList<Type> typeList = new RealmList<>();
+    private RealmList<Monster> monsterList = new RealmList<>();
+    private RealmList<Move> moveList = new RealmList<>();
+    private RealmList<String> hyperlinkList = new RealmList<>(); //store every hyperlink in theme
+    private String shareCode;
+
     private RealmList<String> extraVar = new RealmList<String>();
-    private RealmList<String> tempLoadOut = new RealmList<String>();
-    private RealmList<String> tempOpponentLoadOut = new RealmList<String>();
-    private RealmList<String> tempLoadOutId  = new RealmList<String>();
-    private RealmList<String> loadOutList = new RealmList<String>();
-    private RealmList<String> loadOutDialogueList = new RealmList<String>();
+    private RealmList<LoadOut> loadOutList = new RealmList<>();
     private RealmList<String> battleOptions = new RealmList<String>();
     /*
         battleOptions.add(0,spinnerBattleType.getSelectedItem().equals(battletype);
@@ -38,12 +37,6 @@ public class Theme extends RealmObject implements Serializable {
 
     //private Story storyList;
 
-    public RealmList<String> getTempLoadOutId() {
-        return tempLoadOutId;
-    }
-    public void setTempLoadOutId(RealmList<String> tempLoadOutId) {
-        this.tempLoadOutId = tempLoadOutId;
-    }
     public RealmList<String> getBattleOptions() {
         return battleOptions;
     }
@@ -51,35 +44,12 @@ public class Theme extends RealmObject implements Serializable {
         this.battleOptions = battleOptions;
     }
 
-    public RealmList<String> getTempOpponentLoadOut() {
-        return tempOpponentLoadOut;
-    }
-
-    public void setTempOpponentLoadOut(RealmList<String> tempOpponentLoadOut) {
-        this.tempOpponentLoadOut = tempOpponentLoadOut;
-    }
-
-    public RealmList<String> getTempLoadOut() {
-        return tempLoadOut;
-    }
-    public void setTempLoadOut(RealmList<String> tempLoadOut) {
-        this.tempLoadOut = tempLoadOut;
-    }
-
-    public RealmList<String> getLoadOutList() {
+    public RealmList<LoadOut> getLoadOutList() {
         return loadOutList;
     }
 
-    public void setLoadOutList(RealmList<String> loadOutList) {
+    public void setLoadOutList(RealmList<LoadOut> loadOutList) {
         this.loadOutList = loadOutList;
-    }
-
-    public RealmList<String> getLoadOutDialogueList() {
-        return loadOutDialogueList;
-    }
-
-    public void setLoadOutDialogueList(RealmList<String> loadOutDialogueList) {
-        this.loadOutDialogueList = loadOutDialogueList;
     }
 
     public String getId() {
@@ -98,43 +68,76 @@ public class Theme extends RealmObject implements Serializable {
         this.name = name;
     }
 
-    public void setTypeList(RealmList<String> typeList){
+    public void setTypeList(RealmList<Type> typeList){
         this.typeList = typeList;
     }
-    public RealmList<String> getTypeList() {
+    public RealmList<Type> getTypeList() {
         return typeList;
     }
 
     public void addType(Type type){
-        this.typeList.add(type.getId());
+        for(Type typeKey: typeList){
+            if(typeKey.getId().contains(type.getId())){
+                typeList.remove(typeKey);
+            }
+        }
+        this.typeList.add(type);
     }
     public void removeType(Type type){
-        this.typeList.remove(type.getId());
+        for(Type typeKey: typeList){
+            if(typeKey.getId().contains(type.getId())){
+                typeList.remove(typeKey);
+            }
+        }
     }
 
-    public RealmList<String> getMonsterList() {
+    public RealmList<Monster> getMonsterList() {
         return monsterList;
     }
 
-    public void setMonsterList(RealmList<String> monsterList) {
+    public void setMonsterList(RealmList<Monster> monsterList) {
         this.monsterList = monsterList;
     }
 
     public void addMonster(Monster monster){
-        this.monsterList.add(monster.getId());
+        for(Monster monsterKey: monsterList){
+            if(monsterKey.getId().contains(monster.getId())){
+                typeList.remove(monsterKey);
+            }
+        }
+        this.monsterList.add(monster);
     }
 
+    public void removeMonster(Monster monster){
+        for(Monster monsterKey: monsterList){
+            if(monsterKey.getId().contains(monster.getId())){
+                typeList.remove(monsterKey);
+            }
+        }
+    }
 
-    public RealmList<String> getMoveList() {
+    public RealmList<Move> getMoveList() {
         return moveList;
     }
 
-    public void setMoveList(RealmList<String> moveList) {
+    public void setMoveList(RealmList<Move> moveList) {
         this.moveList = moveList;
     }
 
     public void addMove(Move move){
-        this.moveList.add(move.getId());
+        for(Move moveKey: moveList){
+            if(moveKey.getId().contains(move.getId())){
+                typeList.remove(moveKey);
+            }
+        }
+        this.moveList.add(move);
+    }
+    public void removeMove(Move move){
+        for(Move moveKey: moveList){
+            if(moveKey.getId().contains(move.getId())){
+                typeList.remove(moveKey);
+            }
+        }
     }
 
     public RealmList<String> getHyperlinkList() {
@@ -166,4 +169,51 @@ public class Theme extends RealmObject implements Serializable {
         this.extraVar.add(varNameValue);
     }
 
+    public Type getType(String id){
+        for(Type type: typeList){
+            if(type.getId().equals(id)){
+                return type;
+            }
+        }
+        return new Type();
+    }
+    public Monster getMonster(String id){
+        for(Monster monster: monsterList){
+            if(monster.getId().equals(id)){
+                return monster;
+            }
+        }
+        return new Monster();
+    }
+    public Move getMove(String id){
+        for(Move move: moveList){
+            if(move.getId().equals(id)){
+                return move;
+            }
+        }
+        return new Move();
+    }
+    public LoadOut getLoadOut(String id){
+        for(LoadOut loadOut: loadOutList){
+            if(loadOut.getId().equals(id)){
+                return loadOut;
+            }
+        }
+        return new LoadOut();
+    }
+    public void addLoadOut(LoadOut loadOut){
+        for(LoadOut key: loadOutList){
+            if(key.getId().contains(loadOut.getId())){
+                loadOutList.remove(key);
+            }
+        }
+        this.loadOutList.add(loadOut);
+    }
+    public void removeLoadOut(LoadOut loadOut){
+        for(LoadOut key: loadOutList){
+            if(key.getId().contains(loadOut.getId())){
+                loadOutList.remove(key);
+            }
+        }
+    }
 }

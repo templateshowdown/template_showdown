@@ -15,7 +15,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.templateshowdown.object.LoadOut;
 import com.example.templateshowdown.object.Monster;
+import com.example.templateshowdown.object.RealmHash;
 import com.example.templateshowdown.object.SaveLoadData;
 import com.example.templateshowdown.object.User;
 
@@ -24,8 +26,13 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.TimeZone;
+
+import io.realm.RealmList;
 
 @EActivity(R.layout.activity_select_loadout)
 public class SelectLoadoutActivity extends AppCompatActivity {
@@ -38,7 +45,7 @@ public class SelectLoadoutActivity extends AppCompatActivity {
     private String message;
 
     public static String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
-
+    private SimpleDateFormat gmtDateFormat;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +56,8 @@ public class SelectLoadoutActivity extends AppCompatActivity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        gmtDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        gmtDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         EditText editTextSearch = (EditText) findViewById(R.id.editTextSearch);
         fixLoadout();
         if (message.contains("practice") || message.contains("battle")) {
@@ -90,12 +99,12 @@ public class SelectLoadoutActivity extends AppCompatActivity {
     }
 
     private void loadLoadoutList(User user) {
-        for (String key : SaveLoadData.userData.temporaryTheme.getLoadOutList().keySet()) {
+        for (LoadOut key : SaveLoadData.tempData.temporaryTheme.getLoadOutList()) {
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.layout_item_scroll, null);
             TextView textViewLoadOutName = view.findViewById(R.id.textViewItemName);
             final Button buttonLoadOut = view.findViewById(R.id.buttonChoose);
-            final String keyData = key;
+            final String keyData = key.getId();
             buttonLoadOut.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -104,7 +113,7 @@ public class SelectLoadoutActivity extends AppCompatActivity {
 
                 }
             });
-            textViewLoadOutName.setText(SaveLoadData.userData.temporaryTheme.getLoadOutDialogueList().get(key).get(0));
+            textViewLoadOutName.setText(key.getName());
             linearLayoutRecent.setOrientation(LinearLayout.VERTICAL);
             linearLayoutRecent.addView(view);
         }
@@ -115,30 +124,25 @@ public class SelectLoadoutActivity extends AppCompatActivity {
         if (!editTextSearch.getText().toString().trim().isEmpty()) {
             String searchQuery = editTextSearch.getText().toString();
             linearLayoutSearch.removeAllViews();
-            for (String key : SaveLoadData.database.temporaryTheme.getLoadOutList().keySet()) {
-                if (SaveLoadData.database.temporaryTheme.getLoadOutDialogueList().get(0).contains(searchQuery)) {
+            for (final LoadOut key : SaveLoadData.tempData.temporaryTheme.getLoadOutList()) {
+                if (key.getName().contains(searchQuery)) {
                     LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     View view = inflater.inflate(R.layout.layout_item_scroll, null);
                     TextView textViewLoadOutName = view.findViewById(R.id.textViewItemName);
                     final Button buttonLoadOut = view.findViewById(R.id.buttonChoose);
-                    final String keyData = key;
+                    final String keyData = key.getId();
                     buttonLoadOut.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             //add this theme to the user's recent theme list first then...
-                            SaveLoadData.userData.temporaryTheme.getLoadOutList(true).put(keyData, SaveLoadData.database.temporaryTheme.getLoadOutList().get(keyData));
-                            SaveLoadData.userData.temporaryTheme.getLoadOutDialogueList(true).put(keyData, SaveLoadData.database.temporaryTheme.getLoadOutDialogueList().get(keyData));
-                            SaveLoadData.userData.getThemeList(true).put(SaveLoadData.userData.temporaryTheme.getId(), SaveLoadData.userData.temporaryTheme);
-                            SaveLoadData saveLoadData = new SaveLoadData();
-                            try {
-                                saveLoadData.saveUser(SaveLoadData.userData, getApplication());
-                            } catch (Exception e) {
-                            }
+                            String tempId = SaveLoadData.tempData.temporaryTheme.getId()+SaveLoadData.userData.getUserName() + gmtDateFormat.format(new Date());
+                            key.setId(tempId);
+                            SaveLoadData.tempData.temporaryTheme.addLoadOut(SaveLoadData.tempData.tempLoadOut.get(0));
                             buttonLoadoutClick(keyData);//and use the id to get all info of the theme and send user to the next page.
 
                         }
                     });
-                    textViewLoadOutName.setText(SaveLoadData.database.temporaryTheme.getLoadOutDialogueList().get(key).get(0));
+                    textViewLoadOutName.setText(key.getName());
                     linearLayoutSearch.setOrientation(LinearLayout.VERTICAL);
                     linearLayoutSearch.addView(view);
                 }
@@ -159,24 +163,16 @@ public class SelectLoadoutActivity extends AppCompatActivity {
         if (message.contains("practice") || message.contains("battle")) {
             String readyMessage = message.contains("practice") ? "practice" : "battle";
             if (message.contains("player")) {
-                for(String key:SaveLoadData.userData.temporaryTheme.getLoadOutList().keySet()){
-                    if(key.equals(keyData)) {
-                        HashMap<String, Monster> tempLoadOut = new HashMap<>();
-                        for (String key1 : SaveLoadData.userData.temporaryTheme.getLoadOutList().get(key).keySet()) {
-                            tempLoadOut.put(key1 + SaveLoadData.userData.getUserName(), SaveLoadData.userData.temporaryTheme.getLoadOutList().get(key).get(key1));
-                        }
-                        SaveLoadData.userData.temporaryTheme.setTempLoadOut(tempLoadOut);
+                for(LoadOut key:SaveLoadData.tempData.temporaryTheme.getLoadOutList()){
+                    if(key.getId().equals(keyData)) {
+                        SaveLoadData.tempData.tempLoadOut.add(0,key);
                     }
                 }
 
             } else if (message.contains("opponent")) {
-                for(String key:SaveLoadData.userData.temporaryTheme.getLoadOutList().keySet()){
-                    if(key.equals(keyData)) {
-                        HashMap<String, Monster> tempLoadOut = new HashMap<>();
-                        for (String key1 : SaveLoadData.userData.temporaryTheme.getLoadOutList().get(key).keySet()) {
-                            tempLoadOut.put(key1 + "opponent", SaveLoadData.userData.temporaryTheme.getLoadOutList().get(key).get(key1));
-                        }
-                        SaveLoadData.userData.temporaryTheme.setTempOpponentLoadOut(tempLoadOut);
+                for(LoadOut key:SaveLoadData.tempData.temporaryTheme.getLoadOutList()){
+                    if(key.getId().equals(keyData)) {
+                        SaveLoadData.tempData.tempLoadOut.add(1,key);
                     }
                 }
             }
@@ -200,7 +196,7 @@ public class SelectLoadoutActivity extends AppCompatActivity {
             startActivity(intent);
         } else {
             Intent intent = new Intent(this, PlayThemeActivity_.class);
-            intent.putExtra(EXTRA_MESSAGE, SaveLoadData.userData.temporaryTheme.getId());
+            intent.putExtra(EXTRA_MESSAGE, SaveLoadData.tempData.temporaryTheme.getId());
             startActivity(intent);
         }
     }
@@ -215,35 +211,37 @@ public class SelectLoadoutActivity extends AppCompatActivity {
             startActivity(intent);
         } else {
             Intent intent = new Intent(this, PlayThemeActivity_.class);
-            intent.putExtra(EXTRA_MESSAGE, SaveLoadData.userData.temporaryTheme.getId());
+            intent.putExtra(EXTRA_MESSAGE, SaveLoadData.tempData.temporaryTheme.getId());
             startActivity(intent);
         }
     }
 
     void fixLoadout() {
-        for (String key : SaveLoadData.userData.temporaryTheme.getLoadOutList().keySet()) {
-            for (String key1 : SaveLoadData.userData.temporaryTheme.getLoadOutList().get(key).keySet()) {
-                String id = SaveLoadData.userData.temporaryTheme.getLoadOutList().get(key).get(key1).getId();
-                if (SaveLoadData.userData.temporaryTheme.getMonsterList().containsKey(id)) {
-                    ArrayList<String> tempMoveList = new ArrayList<>();
-                    String tempLevel = SaveLoadData.userData.temporaryTheme.getLoadOutList().get(key).get(key1).getExtraVar().get("Level");
-                    for(int i = 0; i<SaveLoadData.userData.temporaryTheme.getLoadOutList().get(key).get(key1).getMoveList().size();i++){
-                        if(SaveLoadData.userData.temporaryTheme.getMonsterList().get(id).getLevelEventList().
-                                containsKey(SaveLoadData.userData.temporaryTheme.getLoadOutList().get(key).get(key1).getMoveList().get(i))){
-                            if(SaveLoadData.userData.temporaryTheme.getMoveList().containsKey(SaveLoadData.userData.temporaryTheme.getLoadOutList().get(key).get(key1).getMoveList().get(i))&&
-                                    Integer.parseInt(tempLevel)>= Integer.parseInt(SaveLoadData.userData.temporaryTheme.getMonsterList().get(id).getLevelEventList().
-                                            get(SaveLoadData.userData.temporaryTheme.getLoadOutList().get(key).get(key1).getMoveList().get(i)).get(0))){
-                                tempMoveList.add(SaveLoadData.userData.temporaryTheme.getLoadOutList().get(key).get(key1).getMoveList().get(i));
+        for (LoadOut key : SaveLoadData.tempData.temporaryTheme.getLoadOutList()) {
+            for (Monster key1 : key.getMonsterTeam()) {
+                String id = key1.getId();
+                if (SaveLoadData.tempData.temporaryTheme.getMonster(id)!=null) {
+                    RealmList<String> tempMoveList = new RealmList<>();
+                    String tempLevel = key1.getExtraVarRealmHash("Level").value;
+                    for(int i = 0; i<key1.getMoveList().size();i++){
+                        if(!key1.getLevelEvent(key1.getMoveList().get(i)).equals("")){
+                            if(key1.getMoveList().contains(key1.getMoveList().get(i))&&
+                                    Integer.parseInt(tempLevel)>= Integer.parseInt(key1.getLevelEvent(key1.getMoveList().get(i)).getLevel())){
+                                tempMoveList.add(key1.getMoveList().get(i));
                             }
                         }
                     }
-                    Monster tempMonster = new Monster(SaveLoadData.userData.temporaryTheme.getMonsterList().get(id));
-                    tempMonster.getExtraVar(true).put("Level",tempLevel);
+                    Monster tempMonster = SaveLoadData.tempData.temporaryTheme.getMonster(id);
+                    RealmHash realmHash = new RealmHash();
+                    realmHash.key = SaveLoadData.tempData.tempMonster.getBattleId() + "Level";
+                    realmHash.index = "Level";
+                    realmHash.value =  tempLevel;
+                    tempMonster.addExtraVar(realmHash);
                     tempMonster.setMoveList(tempMoveList);
-                    SaveLoadData.userData.temporaryTheme.getLoadOutList(true).get(key).put(key1,tempMonster);
+                    key.addMonster(tempMonster);
                 }
                 else{
-                    SaveLoadData.userData.temporaryTheme.getLoadOutList(true).get(key).remove(key1);
+                    key.removeMonster(key1);
                 }
             }
         }

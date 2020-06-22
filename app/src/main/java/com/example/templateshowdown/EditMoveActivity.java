@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.effect.Effect;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.text.Editable;
@@ -22,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.templateshowdown.object.EffectInfo;
 import com.example.templateshowdown.object.Move;
 import com.example.templateshowdown.object.MoveEffect;
 import com.example.templateshowdown.object.SaveLoadData;
@@ -75,10 +77,10 @@ public class EditMoveActivity extends AppCompatActivity {
         gmtDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         gmtDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         if (message.equals("new")) {
-            SaveLoadData.userData.temporaryTheme.tempMove = new Move();
+            SaveLoadData.tempData.tempMove = new Move();
             editTextName.setText("New Move");
-            SaveLoadData.userData.temporaryTheme.tempMove.setName("New Move");
-            SaveLoadData.userData.temporaryTheme.tempMove.setId(SaveLoadData.userData.getUserName() + gmtDateFormat.format(new Date()));
+            SaveLoadData.tempData.tempMove.setName("New Move");
+            SaveLoadData.tempData.tempMove.setId(SaveLoadData.userData.getUserName() + gmtDateFormat.format(new Date()));
             editTextPower.setText("1");
             editTextAccuracy.setText("1");
             editTextPriority.setText("1");
@@ -91,50 +93,51 @@ public class EditMoveActivity extends AppCompatActivity {
             spinnerType.setAdapter(arrayAdapter);
         }
         else if(message.equals("edit")){
-            editTextName.setText(SaveLoadData.userData.temporaryTheme.tempMove.getName());
-            editTextPower.setText(SaveLoadData.userData.temporaryTheme.tempMove.getPower());
-            editTextAccuracy.setText(SaveLoadData.userData.temporaryTheme.tempMove.getAccuracy());
-            editTextPriority.setText(SaveLoadData.userData.temporaryTheme.tempMove.getPriority());
-            editTextUsePoint.setText(SaveLoadData.userData.temporaryTheme.tempMove.getUseCount());
-            if(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.tempMove.getTypeId())!=null) {
-                imageViewColorType.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.tempMove.getTypeId()).getColor());
+            editTextName.setText(SaveLoadData.tempData.tempMove.getName());
+            editTextPower.setText(SaveLoadData.tempData.tempMove.getPower());
+            editTextAccuracy.setText(SaveLoadData.tempData.tempMove.getAccuracy());
+            editTextPriority.setText(SaveLoadData.tempData.tempMove.getPriority());
+            editTextUsePoint.setText(SaveLoadData.tempData.tempMove.getUseCount());
+
+            if(SaveLoadData.tempData.temporaryTheme.getType(SaveLoadData.tempData.tempMove.getTypeId()).getId()!=null) {
+                imageViewColorType.setBackgroundColor(SaveLoadData.tempData.temporaryTheme.getType(SaveLoadData.tempData.tempMove.getTypeId()).getColor());
             }
-            else SaveLoadData.userData.temporaryTheme.tempMove.setTypeId("");
+            else SaveLoadData.tempData.tempMove.setTypeId("");
             loadEffectList();
             loadTypeList();
             spinnerType = findViewById(R.id.spinnerType);
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, typeList);
             arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerType.setAdapter(arrayAdapter);
-            if(SaveLoadData.userData.temporaryTheme.tempMove.getTypeId()!=null){
-                spinnerType.setSelection(typeIndexList.indexOf(SaveLoadData.userData.temporaryTheme.tempMove.getTypeId()));
+            if(SaveLoadData.tempData.tempMove.getTypeId()!=null){
+                spinnerType.setSelection(typeIndexList.indexOf(SaveLoadData.tempData.tempMove.getTypeId()));
             }
         }
         else {
-            SaveLoadData.userData.temporaryTheme.tempMove = new Move(SaveLoadData.userData.temporaryTheme.getMoveList().get(message));
-            editTextName.setText(SaveLoadData.userData.temporaryTheme.tempMove.getName());
-            editTextPower.setText(SaveLoadData.userData.temporaryTheme.tempMove.getPower());
-            editTextAccuracy.setText(SaveLoadData.userData.temporaryTheme.tempMove.getAccuracy());
-            editTextPriority.setText(SaveLoadData.userData.temporaryTheme.tempMove.getPriority());
-            editTextUsePoint.setText(SaveLoadData.userData.temporaryTheme.tempMove.getUseCount());
-            if(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.tempMove.getTypeId())!=null) {
-                imageViewColorType.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.tempMove.getTypeId()).getColor());
+            SaveLoadData.tempData.tempMove = SaveLoadData.tempData.temporaryTheme.getMove(message);
+            editTextName.setText(SaveLoadData.tempData.tempMove.getName());
+            editTextPower.setText(SaveLoadData.tempData.tempMove.getPower());
+            editTextAccuracy.setText(SaveLoadData.tempData.tempMove.getAccuracy());
+            editTextPriority.setText(SaveLoadData.tempData.tempMove.getPriority());
+            editTextUsePoint.setText(SaveLoadData.tempData.tempMove.getUseCount());
+            if(SaveLoadData.tempData.temporaryTheme.getType(SaveLoadData.tempData.tempMove.getTypeId()).getId()!=null) {
+                imageViewColorType.setBackgroundColor(SaveLoadData.tempData.temporaryTheme.getType(SaveLoadData.tempData.tempMove.getTypeId()).getColor());
             }
-            else SaveLoadData.userData.temporaryTheme.tempMove.setTypeId("");
+            else SaveLoadData.tempData.tempMove.setTypeId("");
             loadEffectList();
             loadTypeList();
             spinnerType = findViewById(R.id.spinnerType);
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, typeList);
             arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerType.setAdapter(arrayAdapter);
-            if(SaveLoadData.userData.temporaryTheme.tempMove.getTypeId()!=null){
-                spinnerType.setSelection(typeIndexList.indexOf(SaveLoadData.userData.temporaryTheme.tempMove.getTypeId()));
+            if(SaveLoadData.tempData.tempMove.getTypeId()!=null){
+                spinnerType.setSelection(typeIndexList.indexOf(SaveLoadData.tempData.tempMove.getTypeId()));
             }
         }
         spinnerType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                imageViewColorType.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().get(typeIndexList.get(spinnerType.getSelectedItemPosition())).getColor());
+                imageViewColorType.setBackgroundColor(SaveLoadData.tempData.temporaryTheme.getType(typeIndexList.get(spinnerType.getSelectedItemPosition())).getColor());
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent){}
@@ -144,14 +147,14 @@ public class EditMoveActivity extends AppCompatActivity {
     @Click(R.id.buttonSave)
     void buttonSaveClick(){
         if(editTextName.getText().toString().trim().length()>0) {
-            SaveLoadData.userData.temporaryTheme.tempMove.setName(editTextName.getText().toString().trim());
+            SaveLoadData.tempData.tempMove.setName(editTextName.getText().toString().trim());
             if (typeIndexList.size() != 0)
-                SaveLoadData.userData.temporaryTheme.tempMove.setTypeId(typeIndexList.get(spinnerType.getSelectedItemPosition()));
-            SaveLoadData.userData.temporaryTheme.tempMove.setPower(editTextPower.getText().toString().trim());
-            SaveLoadData.userData.temporaryTheme.tempMove.setAccuracy(editTextAccuracy.getText().toString().trim());
-            SaveLoadData.userData.temporaryTheme.tempMove.setPriority(editTextPriority.getText().toString().trim());
-            SaveLoadData.userData.temporaryTheme.tempMove.setUseCount(editTextUsePoint.getText().toString().trim());
-            SaveLoadData.userData.temporaryTheme.addMove(SaveLoadData.userData.temporaryTheme.tempMove);
+                SaveLoadData.tempData.tempMove.setTypeId(typeIndexList.get(spinnerType.getSelectedItemPosition()));
+            SaveLoadData.tempData.tempMove.setPower(editTextPower.getText().toString().trim());
+            SaveLoadData.tempData.tempMove.setAccuracy(editTextAccuracy.getText().toString().trim());
+            SaveLoadData.tempData.tempMove.setPriority(editTextPriority.getText().toString().trim());
+            SaveLoadData.tempData.tempMove.setUseCount(editTextUsePoint.getText().toString().trim());
+            SaveLoadData.tempData.temporaryTheme.addMove(SaveLoadData.tempData.tempMove);
             Intent intent = new Intent(this, SelectMoveActivity_.class);
             String message = "edit";
             intent.putExtra(EXTRA_MESSAGE, message);
@@ -160,8 +163,8 @@ public class EditMoveActivity extends AppCompatActivity {
     }
     @Click(R.id.buttonDelete)
     void buttonDeleteClick(){
-        if(SaveLoadData.userData.temporaryTheme.getMoveList().containsKey(SaveLoadData.userData.temporaryTheme.tempMove.getId())){
-            SaveLoadData.userData.temporaryTheme.getMoveList(true).remove(SaveLoadData.userData.temporaryTheme.tempMove.getId());
+        if(SaveLoadData.tempData.temporaryTheme.getMove(SaveLoadData.tempData.tempMove.getId()).getId() != null){
+            SaveLoadData.tempData.temporaryTheme.removeMove(SaveLoadData.tempData.tempMove);
         }
         Intent intent = new Intent(this, SelectMoveActivity_.class);
         String message = "edit";
@@ -171,14 +174,14 @@ public class EditMoveActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if(editTextName.getText().toString().trim().length()>0) {
-            SaveLoadData.userData.temporaryTheme.tempMove.setName(editTextName.getText().toString().trim());
+            SaveLoadData.tempData.tempMove.setName(editTextName.getText().toString().trim());
             if (typeIndexList.size() != 0)
-                SaveLoadData.userData.temporaryTheme.tempMove.setTypeId(typeIndexList.get(spinnerType.getSelectedItemPosition()));
-            SaveLoadData.userData.temporaryTheme.tempMove.setPower(editTextPower.getText().toString().trim());
-            SaveLoadData.userData.temporaryTheme.tempMove.setAccuracy(editTextAccuracy.getText().toString().trim());
-            SaveLoadData.userData.temporaryTheme.tempMove.setPriority(editTextPriority.getText().toString().trim());
-            SaveLoadData.userData.temporaryTheme.tempMove.setUseCount(editTextUsePoint.getText().toString().trim());
-            SaveLoadData.userData.temporaryTheme.addMove(SaveLoadData.userData.temporaryTheme.tempMove);
+                SaveLoadData.tempData.tempMove.setTypeId(typeIndexList.get(spinnerType.getSelectedItemPosition()));
+            SaveLoadData.tempData.tempMove.setPower(editTextPower.getText().toString().trim());
+            SaveLoadData.tempData.tempMove.setAccuracy(editTextAccuracy.getText().toString().trim());
+            SaveLoadData.tempData.tempMove.setPriority(editTextPriority.getText().toString().trim());
+            SaveLoadData.tempData.tempMove.setUseCount(editTextUsePoint.getText().toString().trim());
+            SaveLoadData.tempData.temporaryTheme.addMove(SaveLoadData.tempData.tempMove);
             Intent intent = new Intent(this, SelectMoveActivity_.class);
             String message = "edit";
             intent.putExtra(EXTRA_MESSAGE, message);
@@ -186,48 +189,50 @@ public class EditMoveActivity extends AppCompatActivity {
         }
     }
     private void loadEffectList(){
-        for (String key : SaveLoadData.userData.temporaryTheme.tempMove.getEffectList().keySet()) {
+        for (EffectInfo effectInfoKey : SaveLoadData.tempData.tempMove.getEffectList()) {
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.layout_item_scroll, null);
             TextView textViewItemName = view.findViewById(R.id.textViewItemName);
             Button buttonChoose = view.findViewById(R.id.buttonChoose);
-            final String keyData = key;
+            final String keyData = effectInfoKey.getId();
             buttonChoose.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     buttonEffectClick(keyData);
                 }
             });
-            textViewItemName.setText(moveEffect.getEffectNameList().get(Integer.parseInt(SaveLoadData.userData.temporaryTheme.tempMove.getEffectList().get(key).get(1))));
+            textViewItemName.setText(moveEffect.getEffectNameList().get(effectInfoKey.getEffectChoice()));
             linearLayoutEffect.setOrientation(LinearLayout.VERTICAL);
             linearLayoutEffect.addView(view);
         }
     }
     private void loadTypeList(){
-        for (String key : SaveLoadData.userData.temporaryTheme.getTypeList().keySet()) {
-            typeIndexList.add(key);
-            typeList.add(SaveLoadData.userData.temporaryTheme.getTypeList().get(key).getName());
+        for (Type typeKey : SaveLoadData.tempData.temporaryTheme.getTypeList()) {
+            typeIndexList.add(typeKey.getId());
+            typeList.add(typeKey.getName());
         }
     }
     void buttonEffectClick(String keyData){
-        SaveLoadData.userData.temporaryTheme.tempMove.setName(editTextName.getText().toString().trim());
-        if(typeIndexList.size()!=0) SaveLoadData.userData.temporaryTheme.tempMove.setTypeId(typeIndexList.get(spinnerType.getSelectedItemPosition()));
-        SaveLoadData.userData.temporaryTheme.tempMove.setPower(editTextPower.getText().toString().trim());
-        SaveLoadData.userData.temporaryTheme.tempMove.setAccuracy(editTextAccuracy.getText().toString().trim());
-        SaveLoadData.userData.temporaryTheme.tempMove.setPriority(editTextPriority.getText().toString().trim());
-        SaveLoadData.userData.temporaryTheme.tempMove.setUseCount(editTextUsePoint.getText().toString().trim());
+        SaveLoadData.tempData.tempMove.setName(editTextName.getText().toString().trim());
+        if (typeIndexList.size() != 0)
+            SaveLoadData.tempData.tempMove.setTypeId(typeIndexList.get(spinnerType.getSelectedItemPosition()));
+        SaveLoadData.tempData.tempMove.setPower(editTextPower.getText().toString().trim());
+        SaveLoadData.tempData.tempMove.setAccuracy(editTextAccuracy.getText().toString().trim());
+        SaveLoadData.tempData.tempMove.setPriority(editTextPriority.getText().toString().trim());
+        SaveLoadData.tempData.tempMove.setUseCount(editTextUsePoint.getText().toString().trim());
         Intent intent = new Intent(this, EditEffectActivity_.class);
         intent.putExtra(EXTRA_MESSAGE, keyData);
         startActivity(intent);
     }
     @Click(R.id.buttonNew)
     void buttonNewClick(){
-        SaveLoadData.userData.temporaryTheme.tempMove.setName(editTextName.getText().toString().trim());
-        if(typeIndexList.size()!=0) SaveLoadData.userData.temporaryTheme.tempMove.setTypeId(typeIndexList.get(spinnerType.getSelectedItemPosition()));
-        SaveLoadData.userData.temporaryTheme.tempMove.setPower(editTextPower.getText().toString().trim());
-        SaveLoadData.userData.temporaryTheme.tempMove.setAccuracy(editTextAccuracy.getText().toString().trim());
-        SaveLoadData.userData.temporaryTheme.tempMove.setPriority(editTextPriority.getText().toString().trim());
-        SaveLoadData.userData.temporaryTheme.tempMove.setUseCount(editTextUsePoint.getText().toString().trim());
+        SaveLoadData.tempData.tempMove.setName(editTextName.getText().toString().trim());
+        if (typeIndexList.size() != 0)
+            SaveLoadData.tempData.tempMove.setTypeId(typeIndexList.get(spinnerType.getSelectedItemPosition()));
+        SaveLoadData.tempData.tempMove.setPower(editTextPower.getText().toString().trim());
+        SaveLoadData.tempData.tempMove.setAccuracy(editTextAccuracy.getText().toString().trim());
+        SaveLoadData.tempData.tempMove.setPriority(editTextPriority.getText().toString().trim());
+        SaveLoadData.tempData.tempMove.setUseCount(editTextUsePoint.getText().toString().trim());
         Intent intent = new Intent(this, EditEffectActivity_.class);
         intent.putExtra(EXTRA_MESSAGE, "new");
         startActivity(intent);

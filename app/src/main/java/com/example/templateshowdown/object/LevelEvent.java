@@ -8,27 +8,18 @@ import java.util.logging.Level;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 public class LevelEvent extends RealmObject {
-    @PrimaryKey
+    public static final String PROPERTY_ID = "id";
+
+    @PrimaryKey @Required
     private String id;
+
     private String level;
     private String eventType;
     private String eventVariableId;
-    private RealmList<String> monsterList= new RealmList<String>();;
-    private RealmList<String> moveList = new RealmList<String>();;
-    private RealmList<String> monsterNameList = new RealmList<String>();
-    private RealmList<String> moveNameList = new RealmList<String>();
-    private RealmList<String> eventTypeList = new RealmList<String>();;
 
-
-    public RealmList<String> getEventTypeList() {
-        return eventTypeList;
-    }
-
-    public void setEventTypeList(RealmList<String> eventTypeList) {
-        this.eventTypeList = eventTypeList;
-    }
 
     public String getId() {
         return id;
@@ -60,44 +51,6 @@ public class LevelEvent extends RealmObject {
 
     public void setEventVariableId(String eventVariableId) {
         this.eventVariableId = eventVariableId;
-    }
-
-    public RealmList<String> getMonsterList() {
-        return monsterList;
-    }
-
-    public void setMonsterList(RealmList<String> monsterList) {
-        this.monsterList = monsterList;
-    }
-
-    public RealmList<String> getMoveList() {
-        return moveList;
-    }
-
-    public void setMoveList(RealmList<String> moveList) {
-        this.moveList = moveList;
-    }
-
-    public RealmList<String> getMonsterNameList() {
-        return monsterNameList;
-    }
-
-    public void setMonsterNameList() {
-        monsterNameList.clear();
-        for(int i = 0; i<monsterList.size(); i++){
-            //monsterNameList.add(monsterList.get(key).getName());
-        }
-    }
-
-    public RealmList<String> getMoveNameList() {
-        return moveNameList;
-    }
-
-    public void setMoveNameList() {
-        moveNameList.clear();
-        for(int i = 0;i< moveList.size();i++){
-            //moveNameList.add(moveList.get(key).getName());
-        }
     }
 
 }

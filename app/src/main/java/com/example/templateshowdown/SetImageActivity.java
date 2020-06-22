@@ -77,12 +77,12 @@ public class SetImageActivity extends AppCompatActivity {
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         WebAction();
-        if(SaveLoadData.userData.temporaryTheme.tempMonster.getHyperLink1()!=null && message.equals("front")){
-            editTextHyperlink.setText(SaveLoadData.userData.temporaryTheme.tempMonster.getHyperLink1());
+        if(SaveLoadData.tempData.tempMonster.getHyperLink1()!=null && message.equals("front")){
+            editTextHyperlink.setText(SaveLoadData.tempData.tempMonster.getHyperLink1());
             buttonAddClick();
         }
-        else if(SaveLoadData.userData.temporaryTheme.tempMonster.getHyperLink2()!=null  && message.equals("back")){
-            editTextHyperlink.setText(SaveLoadData.userData.temporaryTheme.tempMonster.getHyperLink2());
+        else if(SaveLoadData.tempData.tempMonster.getHyperLink2()!=null  && message.equals("back")){
+            editTextHyperlink.setText(SaveLoadData.tempData.tempMonster.getHyperLink2());
             buttonAddClick();
         }
     }
@@ -186,10 +186,10 @@ public class SetImageActivity extends AppCompatActivity {
                                     .into(imageViewPreview);
             imageViewPreview.setBackgroundColor(0);
             if(message.equals("front")){
-                SaveLoadData.userData.temporaryTheme.tempMonster.setHyperLink1(editTextHyperlink.getText().toString().trim());
+                SaveLoadData.tempData.tempMonster.setHyperLink1(editTextHyperlink.getText().toString().trim());
             }
             else{
-                SaveLoadData.userData.temporaryTheme.tempMonster.setHyperLink2(editTextHyperlink.getText().toString().trim());
+                SaveLoadData.tempData.tempMonster.setHyperLink2(editTextHyperlink.getText().toString().trim());
             }
             gifPreview.setVisibility(View.INVISIBLE);
             imageViewPreview.setVisibility(View.VISIBLE);
@@ -199,19 +199,19 @@ public class SetImageActivity extends AppCompatActivity {
             if(editTextHyperlink.getText().toString().contains("http")){
                 webViewPreview.loadUrl(editTextHyperlink.getText().toString());
                 if(message.equals("front")){
-                    SaveLoadData.userData.temporaryTheme.tempMonster.setHyperLink1(editTextHyperlink.getText().toString().trim());
+                    SaveLoadData.tempData.tempMonster.setHyperLink1(editTextHyperlink.getText().toString().trim());
                 }
                 else{
-                    SaveLoadData.userData.temporaryTheme.tempMonster.setHyperLink2(editTextHyperlink.getText().toString().trim());
+                    SaveLoadData.tempData.tempMonster.setHyperLink2(editTextHyperlink.getText().toString().trim());
                 }
             }
             else {
                 webViewPreview.loadUrl("https://" + editTextHyperlink.getText().toString());
                 if(message.equals("front")){
-                    SaveLoadData.userData.temporaryTheme.tempMonster.setHyperLink1("https://" + editTextHyperlink.getText().toString().trim());
+                    SaveLoadData.tempData.tempMonster.setHyperLink1("https://" + editTextHyperlink.getText().toString().trim());
                 }
                 else{
-                    SaveLoadData.userData.temporaryTheme.tempMonster.setHyperLink2("https://" + editTextHyperlink.getText().toString().trim());
+                    SaveLoadData.tempData.tempMonster.setHyperLink2("https://" + editTextHyperlink.getText().toString().trim());
                 }
             }
             gifPreview.setVisibility(View.INVISIBLE);

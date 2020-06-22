@@ -26,18 +26,24 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
+import io.realm.exceptions.RealmPrimaryKeyConstraintException;
+
 @EActivity (R.layout.activity_edit_theme)
 public class EditThemeActivity extends AppCompatActivity {
     @ViewById
     EditText editTextThemeName;
     private String message;
     private SimpleDateFormat gmtDateFormat;
+    private Realm mRealm;
     public static String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         message = intent.getStringExtra(SelectThemeActivity.EXTRA_MESSAGE); // the theme id will be passed in
+        mRealm = Realm.getDefaultInstance();
     }
 
     @Override
@@ -46,70 +52,107 @@ public class EditThemeActivity extends AppCompatActivity {
         gmtDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         gmtDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         if (message.equals("new")) {
-            SaveLoadData.userData.temporaryTheme = new Theme();
+            SaveLoadData.tempData.temporaryTheme = new Theme();
+            SaveLoadData.tempData.temporaryTheme.setName("New Theme");
         }
         else if(!message.equals("edit")){
-            SaveLoadData.userData.temporaryTheme = new Theme(SaveLoadData.userData.getThemeList().get(message)); //message is the theme id of the theme loaded which is kept throughout the edit menu
-            editTextThemeName.setText(SaveLoadData.userData.temporaryTheme.getName()); // get the name of the theme
+            loadTheme();//message is the theme id of the theme loaded which is kept throughout the edit menu
         }
-        else{
-            editTextThemeName.setText(SaveLoadData.userData.temporaryTheme.getName());
-        }
-        editTextThemeName.addTextChangedListener(new TextWatcher() {
+        editTextThemeName.setText(SaveLoadData.tempData.temporaryTheme.getName());
+    }
 
-            public void afterTextChanged(Editable s) {
-            }
-
-            public void beforeTextChanged(CharSequence s, int start,
-                                          int count, int after) {
-            }
-
-            public void onTextChanged(CharSequence s, int start,
-                                      int before, int count) {
-                updateThemeName();
+    void loadTheme() {
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                if(realm.where(Theme.class).equalTo(Theme.PROPERTY_ID, message).findFirst()!=null)
+                SaveLoadData.tempData.temporaryTheme = realm.copyFromRealm(realm.where(Theme.class).equalTo(Theme.PROPERTY_ID, message).findFirst());
             }
         });
     }
 
-    void updateThemeName() {
-        SaveLoadData.userData.temporaryTheme.setName(editTextThemeName.getText().toString().trim());
+    void saveTheme(){
+        try {
+            mRealm = Realm.getDefaultInstance();
+            mRealm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    try {
+                            realm.copyToRealm(SaveLoadData.tempData.temporaryTheme);
+                    } catch (RealmPrimaryKeyConstraintException e) {
+                    }
+                }
+            });
+        } finally {
+            if (mRealm != null) {
+                mRealm.close();
+            }
+        }
     }
+
+    void deleteTheme(){
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Theme theme = realm.where(Theme.class).equalTo(Theme.PROPERTY_ID, SaveLoadData.tempData.temporaryTheme.getId()).findFirst();
+                if (theme != null) {
+                    theme.deleteFromRealm();
+                }
+            }
+        });
+    }
+
     @Click(R.id.buttonEditType)
     void buttonEditTypeClick(){
-        Intent intent = new Intent(this, SelectTypeActivity_.class);
-        intent.putExtra(EXTRA_MESSAGE, message);
-        startActivity(intent);
+        if(!editTextThemeName.getText().toString().trim().isEmpty()) {
+            SaveLoadData.tempData.temporaryTheme.setName(editTextThemeName.getText().toString().trim());
+            Intent intent = new Intent(this, SelectTypeActivity_.class);
+            intent.putExtra(EXTRA_MESSAGE, message);
+            startActivity(intent);
+        }
     }
     @Click(R.id.buttonEditMove)
     void buttonEditMoveClick(){
-        if(SaveLoadData.userData.temporaryTheme.getTypeList().size()>0) {
+        if(!editTextThemeName.getText().toString().trim().isEmpty()) {
+            SaveLoadData.tempData.temporaryTheme.setName(editTextThemeName.getText().toString().trim());
+        if(SaveLoadData.tempData.temporaryTheme.getTypeList()!=null && SaveLoadData.tempData.temporaryTheme.getTypeList().size()>0) {
             Intent intent = new Intent(this, SelectMoveActivity_.class);
             intent.putExtra(EXTRA_MESSAGE, message);
             startActivity(intent);
         }
+        }
     }
     @Click(R.id.buttonEditMonster)
     void buttonEditMonsterClick(){
-        if(SaveLoadData.userData.temporaryTheme.getMoveList().size()>0) {
+        if(!editTextThemeName.getText().toString().trim().isEmpty()) {
+            SaveLoadData.tempData.temporaryTheme.setName(editTextThemeName.getText().toString().trim());
+        if(SaveLoadData.tempData.temporaryTheme.getMoveList()!=null && SaveLoadData.tempData.temporaryTheme.getMoveList().size()>0) {
             Intent intent = new Intent(this, SelectMonsterActivity_.class);
             intent.putExtra(EXTRA_MESSAGE, message);
             startActivity(intent);
         }
+        }
     }
     @Click(R.id.buttonEditStory)
     void buttonEditStoryClick(){
-        Intent intent = new Intent(this, SelectStoryActivity_.class);
-        intent.putExtra(EXTRA_MESSAGE, message);
-        startActivity(intent);
+        if(!editTextThemeName.getText().toString().trim().isEmpty()) {
+            SaveLoadData.tempData.temporaryTheme.setName(editTextThemeName.getText().toString().trim());
+            Intent intent = new Intent(this, SelectStoryActivity_.class);
+            intent.putExtra(EXTRA_MESSAGE, message);
+            startActivity(intent);
+        }
     }
     @Click(R.id.buttonSave)
     void buttonSaveClick(){
-        if(SaveLoadData.userData.temporaryTheme.getName()!=null &&SaveLoadData.userData.temporaryTheme.getName().length()>1) {
-            if (SaveLoadData.userData.temporaryTheme.getId() == null) {
-                SaveLoadData.userData.temporaryTheme.setId(SaveLoadData.userData.getUserName() + gmtDateFormat.format(new Date())); //create theme and save immediately
+        if(!editTextThemeName.getText().toString().trim().isEmpty()) {
+            SaveLoadData.tempData.temporaryTheme.setName(editTextThemeName.getText().toString().trim());
+            if (SaveLoadData.tempData.temporaryTheme.getId() == null) {
+                SaveLoadData.tempData.temporaryTheme.setId(SaveLoadData.userData.getUserName() +","+ gmtDateFormat.format(new Date())); //create theme and save immediately
             }
-            SaveLoadData.userData.addTheme(SaveLoadData.userData.temporaryTheme); //save to server
-            saveUserData();
+            saveTheme();
+            Intent intent = new Intent(this, SelectThemeActivity_.class);
+            intent.putExtra(EXTRA_MESSAGE, "edit");
+            startActivity(intent);
         }
     }
     @Override
@@ -120,22 +163,12 @@ public class EditThemeActivity extends AppCompatActivity {
     }
     @Click(R.id.buttonDelete)
     void buttonDeleteClick(){
-        if(SaveLoadData.userData.temporaryTheme.getId()!=null){
-            SaveLoadData.userData.deleteTheme(SaveLoadData.userData.temporaryTheme);
-        }
-        saveUserData();
-    }
-
-    void saveUserData(){
-        try{
-            SaveLoadData saveLoadData = new SaveLoadData();
-            saveLoadData.saveUser(SaveLoadData.userData, MyApplication.getAppContext());
-        }
-        catch (Exception e){
-
+        if(SaveLoadData.tempData.temporaryTheme.getId()!=null){
+            deleteTheme();
         }
         Intent intent = new Intent(this, SelectThemeActivity_.class);
         intent.putExtra(EXTRA_MESSAGE, "edit");
         startActivity(intent);
     }
+
 }

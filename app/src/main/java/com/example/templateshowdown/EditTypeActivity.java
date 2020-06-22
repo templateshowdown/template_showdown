@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.templateshowdown.object.RealmHash;
 import com.example.templateshowdown.object.SaveLoadData;
 import com.example.templateshowdown.object.Theme;
 import com.example.templateshowdown.object.Type;
@@ -34,6 +35,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.TimeZone;
+
+import io.realm.Realm;
+import io.realm.exceptions.RealmPrimaryKeyConstraintException;
 
 @EActivity (R.layout.activity_edit_type)
 public class EditTypeActivity extends AppCompatActivity {
@@ -55,12 +59,15 @@ public class EditTypeActivity extends AppCompatActivity {
     private ImageView imageViewCurrentType;
     private SimpleDateFormat gmtDateFormat;
     private String selfEffectiveness;
+    private Realm mRealm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        mRealm = Realm.getDefaultInstance();
     }
+
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -76,23 +83,23 @@ public class EditTypeActivity extends AppCompatActivity {
         linearLayoutEffectiveness.addView(viewCurrentType);
         if (message.equals("new")) {
             imageViewColorSelected.setBackgroundColor(Color.parseColor("#FFFFFF"));
-            SaveLoadData.userData.temporaryTheme.tempType = new Type();
+            SaveLoadData.tempData.tempType = new Type();
             editTextName.setText("New Type");
             textViewCurrentType.setText(editTextName.getText());
             imageViewCurrentType.setBackgroundColor(Color.parseColor("#FFFFFF"));
-            SaveLoadData.userData.temporaryTheme.tempType.setColor(Color.parseColor("#FFFFFF"));
-            SaveLoadData.userData.temporaryTheme.tempType.setName("New Type");
+            SaveLoadData.tempData.tempType.setColor(Color.parseColor("#FFFFFF"));
+            SaveLoadData.tempData.tempType.setName("New Type");
             selfEffectiveness = "1";
-            SaveLoadData.userData.temporaryTheme.tempType.setId(SaveLoadData.userData.getUserName() + gmtDateFormat.format(new Date()));
+            SaveLoadData.tempData.tempType.setId(SaveLoadData.userData.getUserName() +","+ SaveLoadData.tempData.temporaryTheme.getName()+","+ gmtDateFormat.format(new Date()));
 
         } else {
-            SaveLoadData.userData.temporaryTheme.tempType = new Type(SaveLoadData.userData.temporaryTheme.getTypeList().get(message));
-            imageViewColorSelected.setBackgroundColor(SaveLoadData.userData.temporaryTheme.tempType.getColor());
-            editTextName.setText(SaveLoadData.userData.temporaryTheme.tempType.getName()); // get the name of the type
+            SaveLoadData.tempData.tempType = SaveLoadData.tempData.temporaryTheme.getType(message);
+            imageViewColorSelected.setBackgroundColor(SaveLoadData.tempData.tempType.getColor());
+            editTextName.setText(SaveLoadData.tempData.tempType.getName()); // get the name of the type
             textViewCurrentType.setText(editTextName.getText());
-            imageViewCurrentType.setBackgroundColor(SaveLoadData.userData.temporaryTheme.tempType.getColor());
-            editTextCurrentValue1.setText(SaveLoadData.userData.temporaryTheme.tempType.getAttacking().get(SaveLoadData.userData.temporaryTheme.tempType.getId()));
-            editTextCurrentValue2.setText(SaveLoadData.userData.temporaryTheme.tempType.getAttacking().get(SaveLoadData.userData.temporaryTheme.tempType.getId()));
+            imageViewCurrentType.setBackgroundColor(SaveLoadData.tempData.tempType.getColor());
+            editTextCurrentValue1.setText(SaveLoadData.tempData.tempType.getAttackingHash(message).value);
+            editTextCurrentValue2.setText(SaveLoadData.tempData.tempType.getDefendingHash(message).value);
         }
         editTextCurrentValue2.setFocusable(false);
         loadTypeList();
@@ -128,6 +135,7 @@ public class EditTypeActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 editTextCurrentValue2.setText(editTextCurrentValue1.getText());
+                if(!editTextCurrentValue1.getText().toString().trim().isEmpty())
                 selfEffectiveness = editTextCurrentValue1.getText().toString();
             }
 
@@ -141,20 +149,25 @@ public class EditTypeActivity extends AppCompatActivity {
     void buttonSelectColorClick(){
         selectedColor = colorPicker.getColor();
         imageViewColorSelected.setBackgroundColor(selectedColor);
-        SaveLoadData.userData.temporaryTheme.tempType.setColor(selectedColor);
+        SaveLoadData.tempData.tempType.setColor(selectedColor);
         imageViewCurrentType.setBackgroundColor(selectedColor);
     }
     void updateTypeName() {
         textViewCurrentType.setText(editTextName.getText());
-        SaveLoadData.userData.temporaryTheme.tempType.setName(editTextName.getText().toString().trim());
+        SaveLoadData.tempData.tempType.setName(editTextName.getText().toString().trim());
     }
 
     @Click(R.id.buttonSave)
     void buttonSaveClick(){
         if(editTextName.getText().toString().trim().length()>0) {
-            SaveLoadData.userData.temporaryTheme.tempType.addAttacking(SaveLoadData.userData.temporaryTheme.tempType.getId(), selfEffectiveness);
-            SaveLoadData.userData.temporaryTheme.tempType.addDefending(SaveLoadData.userData.temporaryTheme.tempType.getId(), selfEffectiveness);
-            SaveLoadData.userData.temporaryTheme.addType(SaveLoadData.userData.temporaryTheme.tempType);
+            RealmHash realmHash = new RealmHash();
+            realmHash.key = SaveLoadData.tempData.tempType.getId()+"Attack";
+            realmHash.index = SaveLoadData.tempData.tempType.getId();
+            realmHash.value = selfEffectiveness;
+            SaveLoadData.tempData.tempType.addAttacking(realmHash);
+            realmHash.key = SaveLoadData.tempData.tempType.getId()+"Defend";
+            SaveLoadData.tempData.tempType.addDefending(realmHash);
+            SaveLoadData.tempData.temporaryTheme.addType(SaveLoadData.tempData.tempType);
             Intent intent = new Intent(this, SelectTypeActivity_.class);
             String message = "edit";
             intent.putExtra(EXTRA_MESSAGE, message);
@@ -163,8 +176,8 @@ public class EditTypeActivity extends AppCompatActivity {
     }
     @Click(R.id.buttonDelete)
     void buttonDeleteClick(){
-        if(SaveLoadData.userData.temporaryTheme.getTypeList().containsKey(SaveLoadData.userData.temporaryTheme.tempType.getId())){
-            SaveLoadData.userData.temporaryTheme.removeType(SaveLoadData.userData.temporaryTheme.tempType);
+        if(SaveLoadData.tempData.temporaryTheme.getTypeList().contains(SaveLoadData.tempData.tempType.getId())){
+            SaveLoadData.tempData.temporaryTheme.removeType(SaveLoadData.tempData.tempType);
         }
         Intent intent = new Intent(this, SelectTypeActivity_.class);
         String message = "edit";
@@ -174,43 +187,52 @@ public class EditTypeActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if(editTextName.getText().toString().trim().length()>0) {
-            SaveLoadData.userData.temporaryTheme.tempType.addAttacking(SaveLoadData.userData.temporaryTheme.tempType.getId(), selfEffectiveness);
-            SaveLoadData.userData.temporaryTheme.tempType.addDefending(SaveLoadData.userData.temporaryTheme.tempType.getId(), selfEffectiveness);
-            SaveLoadData.userData.temporaryTheme.addType(SaveLoadData.userData.temporaryTheme.tempType);
+            RealmHash realmHash = new RealmHash();
+            realmHash.key = SaveLoadData.tempData.tempType.getId();
+            realmHash.value = selfEffectiveness;
+            SaveLoadData.tempData.tempType.addAttacking(realmHash);
+            SaveLoadData.tempData.tempType.addDefending(realmHash);
+            SaveLoadData.tempData.temporaryTheme.addType(SaveLoadData.tempData.tempType);
             Intent intent = new Intent(this, SelectTypeActivity_.class);
             String message = "edit";
             intent.putExtra(EXTRA_MESSAGE, message);
             startActivity(intent);
         }
     }
+
     private void loadTypeList(){
-        for(String key :SaveLoadData.userData.temporaryTheme.tempType.getAttacking().keySet()){
-            if(SaveLoadData.userData.temporaryTheme.getTypeList().get(key)==null){
-                SaveLoadData.userData.temporaryTheme.tempType.getAttacking(true).remove(key);
-                SaveLoadData.userData.temporaryTheme.tempType.getDefending(true).remove(key);
+        for(RealmHash realmHashKey :SaveLoadData.tempData.tempType.getAttacking()){
+            if(SaveLoadData.tempData.temporaryTheme.getType(realmHashKey.index).getId()==null) {
+                SaveLoadData.tempData.tempType.removeAttacking(realmHashKey);
             }
         }
-        for (String key : SaveLoadData.userData.temporaryTheme.getTypeList().keySet()) {
-            if(!key.equals(SaveLoadData.userData.temporaryTheme.tempType.getId())) {
+        for(RealmHash realmHashKey :SaveLoadData.tempData.tempType.getDefending()){
+            if(SaveLoadData.tempData.temporaryTheme.getType(realmHashKey.index).getId()==null) {
+                SaveLoadData.tempData.tempType.removeDefending(realmHashKey);
+            }
+        }
+        for (Type typeKey : SaveLoadData.tempData.temporaryTheme.getTypeList()) {
+            if(!typeKey.getId().equals(SaveLoadData.tempData.tempType.getId())) {
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View view = inflater.inflate(R.layout.layout_type_scroll, null);
                 TextView textViewTypeName = view.findViewById(R.id.textViewTypeName);
                 ImageView imageViewColorType = view.findViewById(R.id.imageViewColorType);
                 final EditText editTextValue1 = view.findViewById(R.id.editTextValue1);
                 final EditText editTextValue2 = view.findViewById(R.id.editTextValue2);
-                final String keyData = key;
-                if(SaveLoadData.userData.temporaryTheme.tempType.getAttacking().get(key)!= null) {
-                    editTextValue1.setText(SaveLoadData.userData.temporaryTheme.tempType.getAttacking().get(key));
+                final String keyData = typeKey.getId();
+                if(SaveLoadData.tempData.tempType.getAttackingHash(typeKey.getId()).key!=null){
+                    editTextValue1.setText(SaveLoadData.tempData.tempType.getAttackingHash(typeKey.getId()).value);
                 }
-                else{
-                    editTextValue1.setText("1");
+                for(RealmHash realmHashKey:SaveLoadData.tempData.tempType.getDefending()){
+                    if(realmHashKey.key.equals(typeKey)){
+                        editTextValue2.setText(realmHashKey.value);
+                        break;
+                    }
+                    else{
+                        editTextValue2.setText("1");
+                    }
                 }
-                if(SaveLoadData.userData.temporaryTheme.tempType.getDefending().get(key)!=null) {
-                    editTextValue2.setText(SaveLoadData.userData.temporaryTheme.tempType.getDefending().get(key));
-                }
-                else{
-                    editTextValue2.setText("1");
-                }
+
                 editTextValue1.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -219,9 +241,21 @@ public class EditTypeActivity extends AppCompatActivity {
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        SaveLoadData.userData.temporaryTheme.tempType.addAttacking(keyData,editTextValue1.getText().toString());
-                        if(SaveLoadData.userData.temporaryTheme.tempType.getId()!=null) {
-                            SaveLoadData.userData.temporaryTheme.getTypeList(true).get(keyData).addDefending(SaveLoadData.userData.temporaryTheme.tempType.getId(), editTextValue1.getText().toString());
+                        RealmHash tempHash = new RealmHash();
+                        tempHash.key = keyData+",Attack";
+                        tempHash.value = editTextValue1.getText().toString();
+                        SaveLoadData.tempData.tempType.addAttacking(tempHash);
+                        if(SaveLoadData.tempData.tempType.getId()!=null) {
+                           for(Type typeKey : SaveLoadData.tempData.temporaryTheme.getTypeList()){
+                               if(typeKey.getId().equals(keyData)){
+                                   tempHash = new RealmHash();
+                                   tempHash.key = keyData+",Defend";
+                                   tempHash.value = editTextValue1.getText().toString();
+                                   typeKey.addDefending(tempHash);
+                                   SaveLoadData.tempData.temporaryTheme.addType(typeKey);
+                                   break;
+                               }
+                           }
                         }
                     }
 
@@ -238,9 +272,21 @@ public class EditTypeActivity extends AppCompatActivity {
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        SaveLoadData.userData.temporaryTheme.tempType.addDefending(keyData,editTextValue2.getText().toString());
-                        if(SaveLoadData.userData.temporaryTheme.tempType.getId()!=null) {
-                            SaveLoadData.userData.temporaryTheme.getTypeList(true).get(keyData).addAttacking(SaveLoadData.userData.temporaryTheme.tempType.getId(), editTextValue2.getText().toString());
+                        RealmHash tempHash = new RealmHash();
+                        tempHash.key = keyData+",Defend";
+                        tempHash.value = editTextValue2.getText().toString();
+                        SaveLoadData.tempData.tempType.addDefending(tempHash);
+                        if(SaveLoadData.tempData.tempType.getId()!=null) {
+                            for(Type typeKey : SaveLoadData.tempData.temporaryTheme.getTypeList()){
+                                if(typeKey.getId().equals(keyData)){
+                                    tempHash = new RealmHash();
+                                    tempHash.key = keyData+",Attack";
+                                    tempHash.value = editTextValue2.getText().toString();
+                                    typeKey.addAttacking(tempHash);
+                                    SaveLoadData.tempData.temporaryTheme.addType(typeKey);
+                                    break;
+                                }
+                            }
                         }
                     }
 
@@ -249,8 +295,8 @@ public class EditTypeActivity extends AppCompatActivity {
 
                     }
                 });
-                textViewTypeName.setText(SaveLoadData.userData.temporaryTheme.getTypeList().get(key).getName());
-                imageViewColorType.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().get(key).getColor());
+                textViewTypeName.setText(typeKey.getName());
+                imageViewColorType.setBackgroundColor(typeKey.getColor());
                 linearLayoutEffectiveness.setOrientation(LinearLayout.VERTICAL);
                 linearLayoutEffectiveness.addView(view);
             }

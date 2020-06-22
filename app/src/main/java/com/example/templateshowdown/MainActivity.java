@@ -15,10 +15,15 @@ import org.androidannotations.annotations.*;
 import java.io.IOException;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
+import io.realm.exceptions.RealmPrimaryKeyConstraintException;
 
 @EActivity (R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
     public static String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
+    private RealmConfiguration config;
+    private Realm mRealm;
     @ViewById
     Button buttonPlay;
     @ViewById
@@ -32,9 +37,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Realm.init(this);
-        //setContentView(R.layout.activity_main);
-        loadDatabase();
+        mRealm = Realm.getDefaultInstance();
         loadUserData();
     }
     @Click(R.id.buttonPlay)
@@ -56,15 +59,27 @@ public class MainActivity extends AppCompatActivity {
 
     }
     void initialiseUser() {
-        User user = new User();
-        user.setUserName("testing");
-        user.setPassword("testing");
+        Realm realm = null;
         try {
-            SaveLoadData saveLoadData = new SaveLoadData();
-            saveLoadData.saveUser(user,this);
-        }
-        catch(Exception e) {
-            Log.d("failed ini user","failed");
+            realm = Realm.getDefaultInstance();
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    try {
+                        User user = new User();
+                        user.setUserName("testing");
+                        user.setPassword("testing");
+                        SaveLoadData.userData = user;
+                        realm.copyToRealm(user);
+                    } catch (RealmPrimaryKeyConstraintException e) {
+
+                    }
+                }
+            });
+        } finally {
+            if (realm != null) {
+                realm.close();
+            }
         }
     }
     void initialiseDatabase() {
@@ -81,34 +96,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void loadUserData(){
-        boolean success = true;
-        try {
-            SaveLoadData saveLoadData = new SaveLoadData();
-            saveLoadData.loadUser(this);
-        }
-
-        catch(Exception e) {
-            Log.d("failed load user","failed");
-            success = false;
-        }
-        if(!success){
-            initialiseUser();
+        mRealm.executeTransaction(new Realm.Transaction() {
+            boolean success = false;
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<User> results = realm.where(User.class).findAll();
+                for (User user : results) {
+                    if(user.getUserName().equals("testing")){
+                        SaveLoadData.userData = user;
+                        success = true;
+                    }
+                }
+                if(!success){
+                    initialiseUser();
+                }
+            }
+        });
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mRealm != null) {
+            mRealm.close();
         }
     }
-    void loadDatabase(){
-        boolean success = true;
-        try {
-            SaveLoadData saveLoadData = new SaveLoadData();
-            saveLoadData.loadDatabase(this);
-        }
-
-        catch(Exception e) {
-            success = false;
-            Log.d("failed load database","failed");
-        }
-        if(!success){
-            initialiseDatabase();
-        }
-    }
-
 }

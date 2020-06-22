@@ -32,6 +32,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.templateshowdown.object.Monster;
 import com.example.templateshowdown.object.Move;
 import com.example.templateshowdown.object.MoveEffect;
+import com.example.templateshowdown.object.RealmHash;
+import com.example.templateshowdown.object.RealmStats;
 import com.example.templateshowdown.object.SaveLoadData;
 import com.example.templateshowdown.object.Statistic;
 import com.example.templateshowdown.object.Theme;
@@ -48,6 +50,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
+
+import io.realm.RealmList;
 
 @EActivity (R.layout.activity_edit_monster)
 public class EditMonsterActivity extends AppCompatActivity {
@@ -91,10 +95,10 @@ public class EditMonsterActivity extends AppCompatActivity {
         gmtDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         gmtDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         if (message.equals("new")) {
-            SaveLoadData.userData.temporaryTheme.tempMonster = new Monster();
+            SaveLoadData.tempData.tempMonster = new Monster();
             editTextName.setText("New Monster");
-            SaveLoadData.userData.temporaryTheme.tempMonster.setName("New Monster");
-            SaveLoadData.userData.temporaryTheme.tempMonster.setId(SaveLoadData.userData.getUserName() + gmtDateFormat.format(new Date()));
+            SaveLoadData.tempData.tempMonster.setName("New Monster");
+            SaveLoadData.tempData.tempMonster.setId(SaveLoadData.userData.getUserName() + gmtDateFormat.format(new Date()));
             loadTypeList();
             spinnerType1 = findViewById(R.id.spinnerType1);
             spinnerType2 = findViewById(R.id.spinnerType2);
@@ -104,15 +108,15 @@ public class EditMonsterActivity extends AppCompatActivity {
             spinnerType2.setAdapter(arrayAdapter);
         }
         else if(message.equals("edit")){
-            editTextName.setText(SaveLoadData.userData.temporaryTheme.tempMonster.getName());
-            if(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(0))!=null) {
-                imageViewColorType1.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(0)).getColor());
+            editTextName.setText(SaveLoadData.tempData.tempMonster.getName());
+            if(SaveLoadData.tempData.temporaryTheme.getType(SaveLoadData.tempData.tempMonster.getTypes().get(0))!=null) {
+                imageViewColorType1.setBackgroundColor(SaveLoadData.tempData.temporaryTheme.getType(SaveLoadData.tempData.tempMonster.getTypes().get(0)).getColor());
             }
-            else SaveLoadData.userData.temporaryTheme.tempMonster.getTypes(true).set(0,"");
-            if(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(1))!=null) {
-                imageViewColorType2.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(1)).getColor());
+            else SaveLoadData.tempData.tempMonster.getTypes().set(0,"");
+            if(SaveLoadData.tempData.temporaryTheme.getType(SaveLoadData.tempData.tempMonster.getTypes().get(1))!=null) {
+                imageViewColorType2.setBackgroundColor(SaveLoadData.tempData.temporaryTheme.getType(SaveLoadData.tempData.tempMonster.getTypes().get(1)).getColor());
             }
-            else SaveLoadData.userData.temporaryTheme.tempMonster.getTypes(true).set(1,"");
+            else SaveLoadData.tempData.tempMonster.getTypes().set(1,"");
             loadTypeList();
             spinnerType1 = findViewById(R.id.spinnerType1);
             spinnerType2 = findViewById(R.id.spinnerType2);
@@ -120,24 +124,24 @@ public class EditMonsterActivity extends AppCompatActivity {
             arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerType1.setAdapter(arrayAdapter);
             spinnerType2.setAdapter(arrayAdapter);
-            if(!SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(0).isEmpty()) {
-                spinnerType1.setSelection(typeIndexList.indexOf(SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(0)));
+            if(!SaveLoadData.tempData.tempMonster.getTypes().get(0).isEmpty()) {
+                spinnerType1.setSelection(typeIndexList.indexOf(SaveLoadData.tempData.tempMonster.getTypes().get(0)));
             }
-            if(!SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(1).isEmpty()) {
-                spinnerType2.setSelection(typeIndexList.indexOf(SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(1)));
+            if(!SaveLoadData.tempData.tempMonster.getTypes().get(1).isEmpty()) {
+                spinnerType2.setSelection(typeIndexList.indexOf(SaveLoadData.tempData.tempMonster.getTypes().get(1)));
             }
         }
         else {
-            SaveLoadData.userData.temporaryTheme.tempMonster = new Monster(SaveLoadData.userData.temporaryTheme.getMonsterList().get(message));
-            editTextName.setText(SaveLoadData.userData.temporaryTheme.tempMonster.getName());
-            if(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(0))!=null) {
-                imageViewColorType1.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(0)).getColor());
+            SaveLoadData.tempData.tempMonster = SaveLoadData.tempData.temporaryTheme.getMonster(message);
+            editTextName.setText(SaveLoadData.tempData.tempMonster.getName());
+            if(SaveLoadData.tempData.temporaryTheme.getType(SaveLoadData.tempData.tempMonster.getTypes().get(0))!=null) {
+                imageViewColorType1.setBackgroundColor(SaveLoadData.tempData.temporaryTheme.getType(SaveLoadData.tempData.tempMonster.getTypes().get(0)).getColor());
             }
-            else SaveLoadData.userData.temporaryTheme.tempMonster.getTypes(true).set(0,"");
-            if(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(1))!=null) {
-                imageViewColorType2.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(1)).getColor());
+            else SaveLoadData.tempData.tempMonster.getTypes().set(0,"");
+            if(SaveLoadData.tempData.temporaryTheme.getType(SaveLoadData.tempData.tempMonster.getTypes().get(1))!=null) {
+                imageViewColorType2.setBackgroundColor(SaveLoadData.tempData.temporaryTheme.getType(SaveLoadData.tempData.tempMonster.getTypes().get(1)).getColor());
             }
-            else SaveLoadData.userData.temporaryTheme.tempMonster.getTypes(true).set(1,"");
+            else SaveLoadData.tempData.tempMonster.getTypes().set(1,"");
             loadTypeList();
             spinnerType1 = findViewById(R.id.spinnerType1);
             spinnerType2 = findViewById(R.id.spinnerType2);
@@ -145,18 +149,18 @@ public class EditMonsterActivity extends AppCompatActivity {
             arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerType1.setAdapter(arrayAdapter);
             spinnerType2.setAdapter(arrayAdapter);
-            if(!SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(0).isEmpty()) {
-                spinnerType1.setSelection(typeIndexList.indexOf(SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(0)));
+            if(!SaveLoadData.tempData.tempMonster.getTypes().get(0).isEmpty()) {
+                spinnerType1.setSelection(typeIndexList.indexOf(SaveLoadData.tempData.tempMonster.getTypes().get(0)));
             }
-            if(!SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(1).isEmpty()) {
-                spinnerType2.setSelection(typeIndexList.indexOf(SaveLoadData.userData.temporaryTheme.tempMonster.getTypes().get(1)));
+            if(!SaveLoadData.tempData.tempMonster.getTypes().get(1).isEmpty()) {
+                spinnerType2.setSelection(typeIndexList.indexOf(SaveLoadData.tempData.tempMonster.getTypes().get(1)));
             }
         }
         loadStatisticList();
         spinnerType1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                imageViewColorType1.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().get(typeIndexList.get(spinnerType1.getSelectedItemPosition())).getColor());
+                imageViewColorType1.setBackgroundColor(SaveLoadData.tempData.temporaryTheme.getType(typeIndexList.get(spinnerType1.getSelectedItemPosition())).getColor());
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent){}
@@ -164,13 +168,13 @@ public class EditMonsterActivity extends AppCompatActivity {
         spinnerType2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                imageViewColorType2.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().get(typeIndexList.get(spinnerType2.getSelectedItemPosition())).getColor());
+                imageViewColorType2.setBackgroundColor(SaveLoadData.tempData.temporaryTheme.getType(typeIndexList.get(spinnerType2.getSelectedItemPosition())).getColor());
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent){}
         });
         WebAction();
-        if(SaveLoadData.userData.temporaryTheme.tempMonster.getHyperLink1()!=null){
+        if(SaveLoadData.tempData.tempMonster.getHyperLink1()!=null){
             loadPreviewImage();
         }
     }
@@ -183,23 +187,25 @@ public class EditMonsterActivity extends AppCompatActivity {
     @Click(R.id.buttonSave)
     void buttonSaveClick(){
         if(editTextName.getText().toString().trim().length()>0) {
-            SaveLoadData.userData.temporaryTheme.tempMonster.setName(editTextName.getText().toString().trim());
-            ArrayList<String> types = new ArrayList<>();
+            SaveLoadData.tempData.tempMonster.setName(editTextName.getText().toString().trim());
+            RealmList<String> types = new RealmList<>();
             if (typeIndexList.size() != 0) {
                 types.add(0, typeIndexList.get(spinnerType1.getSelectedItemPosition()));
                 types.add(1, typeIndexList.get(spinnerType2.getSelectedItemPosition()));
             }
-            SaveLoadData.userData.temporaryTheme.tempMonster.setTypes(types);
+            SaveLoadData.tempData.tempMonster.setTypes(types);
             if (textViewsArrayList.size() != 0) {
-                HashMap<String, ArrayList<String>> tempHash = new HashMap<>();
+                RealmList<RealmStats> tempHash = new RealmList<>();
                 for (int i = 0; i < textViewsArrayList.size(); i++) {
-                    ArrayList<String> tempArray = new ArrayList<>();
-                    tempArray.add(Integer.toString(seekBarArrayList.get(i).getProgress()));
-                    tempHash.put(textViewsArrayList.get(i).getText().toString(), tempArray);
+                    RealmStats realmStats = new RealmStats();
+                    realmStats.key = SaveLoadData.tempData.tempMonster.getId()+textViewsArrayList.get(i).getText().toString();
+                    realmStats.name = textViewsArrayList.get(i).getText().toString();
+                    realmStats.baseValue = seekBarArrayList.get(i).getProgress();
+                    tempHash.add(realmStats);
                 }
-                SaveLoadData.userData.temporaryTheme.tempMonster.setMonsterStats(tempHash);
+                SaveLoadData.tempData.tempMonster.setMonsterStats(tempHash);
             }
-            SaveLoadData.userData.temporaryTheme.addMonster(SaveLoadData.userData.temporaryTheme.tempMonster);
+            SaveLoadData.tempData.temporaryTheme.addMonster(SaveLoadData.tempData.tempMonster);
             Intent intent = new Intent(this, SelectMonsterActivity_.class);
             String message = "edit";
             intent.putExtra(EXTRA_MESSAGE, message);
@@ -208,7 +214,7 @@ public class EditMonsterActivity extends AppCompatActivity {
     }
     @Click(R.id.buttonDelete)
     void buttonDeleteClick(){
-        SaveLoadData.userData.temporaryTheme.getMonsterList(true).remove(SaveLoadData.userData.temporaryTheme.tempMonster.getId());
+        SaveLoadData.tempData.temporaryTheme.removeMonster(SaveLoadData.tempData.tempMonster);
         Intent intent = new Intent(this, SelectMonsterActivity_.class);
         String message = "edit";
         intent.putExtra(EXTRA_MESSAGE, message);
@@ -217,23 +223,25 @@ public class EditMonsterActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if(editTextName.getText().toString().trim().length()>0) {
-            SaveLoadData.userData.temporaryTheme.tempMonster.setName(editTextName.getText().toString().trim());
-            ArrayList<String> types = new ArrayList<>();
+            SaveLoadData.tempData.tempMonster.setName(editTextName.getText().toString().trim());
+            RealmList<String> types = new RealmList<>();
             if (typeIndexList.size() != 0) {
                 types.add(0, typeIndexList.get(spinnerType1.getSelectedItemPosition()));
                 types.add(1, typeIndexList.get(spinnerType2.getSelectedItemPosition()));
             }
-            SaveLoadData.userData.temporaryTheme.tempMonster.setTypes(types);
+            SaveLoadData.tempData.tempMonster.setTypes(types);
             if (textViewsArrayList.size() != 0) {
-                HashMap<String, ArrayList<String>> tempHash = new HashMap<>();
+                RealmList<RealmStats> tempHash = new RealmList<>();
                 for (int i = 0; i < textViewsArrayList.size(); i++) {
-                    ArrayList<String> tempArray = new ArrayList<>();
-                    tempArray.add(Integer.toString(seekBarArrayList.get(i).getProgress()));
-                    tempHash.put(textViewsArrayList.get(i).getText().toString(), tempArray);
+                    RealmStats realmStats = new RealmStats();
+                    realmStats.key = SaveLoadData.tempData.tempMonster.getId()+textViewsArrayList.get(i).getText().toString();
+                    realmStats.name = textViewsArrayList.get(i).getText().toString();
+                    realmStats.baseValue = seekBarArrayList.get(i).getProgress();
+                    tempHash.add(realmStats);
                 }
-                SaveLoadData.userData.temporaryTheme.tempMonster.setMonsterStats(tempHash);
+                SaveLoadData.tempData.tempMonster.setMonsterStats(tempHash);
             }
-            SaveLoadData.userData.temporaryTheme.addMonster(SaveLoadData.userData.temporaryTheme.tempMonster);
+            SaveLoadData.tempData.temporaryTheme.addMonster(SaveLoadData.tempData.tempMonster);
             Intent intent = new Intent(this, SelectMonsterActivity_.class);
             String message = "edit";
             intent.putExtra(EXTRA_MESSAGE, message);
@@ -251,37 +259,39 @@ public class EditMonsterActivity extends AppCompatActivity {
             textViewsArrayList.add(textViewStatisticName);
             textViewStatisticName.setText(monsterStats.getStatsNameList().get(i));
             textViewDescription.setText(monsterStats.getStatsDescriptionList().get(i));
-            if(SaveLoadData.userData.temporaryTheme.tempMonster.getMonsterStats().size()!= 0)
-            seekBarTier.setProgress(Integer.parseInt(SaveLoadData.userData.temporaryTheme.tempMonster.getMonsterStats().get(monsterStats.getStatsNameList().get(i)).get(0)));
+            if(SaveLoadData.tempData.tempMonster.getMonsterStats().size()!= 0)
+            seekBarTier.setProgress(SaveLoadData.tempData.tempMonster.getRealmMonsterStat(monsterStats.getStatsNameList().get(i)).baseValue);
             linearLayoutStatistic.setOrientation(LinearLayout.VERTICAL);
             linearLayoutStatistic.addView(view);
         }
     }
     private void loadTypeList(){
-        for (String key : SaveLoadData.userData.temporaryTheme.getTypeList().keySet()) {
-            typeIndexList.add(key);
-            typeList.add(SaveLoadData.userData.temporaryTheme.getTypeList().get(key).getName());
+        for (Type type : SaveLoadData.tempData.temporaryTheme.getTypeList()) {
+            typeIndexList.add(type.getId());
+            typeList.add(type.getName());
         }
     }
 
 
     @Click(R.id.buttonSetLevel)
     void buttonSetLevelClick(){
-        SaveLoadData.userData.temporaryTheme.tempMonster.setName(editTextName.getText().toString().trim());
-        ArrayList<String> types = new ArrayList<>();
+        SaveLoadData.tempData.tempMonster.setName(editTextName.getText().toString().trim());
+        RealmList<String> types = new RealmList<>();
         if(typeIndexList.size()!=0) {
             types.add(0, typeIndexList.get(spinnerType1.getSelectedItemPosition()));
             types.add(1, typeIndexList.get(spinnerType2.getSelectedItemPosition()));
         }
-        SaveLoadData.userData.temporaryTheme.tempMonster.setTypes(types);
-        if(textViewsArrayList.size()!=0) {
-            HashMap<String,ArrayList<String>> tempHash = new HashMap<>();
-            for(int i = 0; i<textViewsArrayList.size();i++) {
-                ArrayList<String> tempArray = new ArrayList<>();
-                tempArray.add(Integer.toString(seekBarArrayList.get(i).getProgress()));
-                tempHash.put(textViewsArrayList.get(i).getText().toString(), tempArray);
+        SaveLoadData.tempData.tempMonster.setTypes(types);
+        if (textViewsArrayList.size() != 0) {
+            RealmList<RealmStats> tempHash = new RealmList<>();
+            for (int i = 0; i < textViewsArrayList.size(); i++) {
+                RealmStats realmStats = new RealmStats();
+                realmStats.key = SaveLoadData.tempData.tempMonster.getId()+textViewsArrayList.get(i).getText().toString();
+                realmStats.name = textViewsArrayList.get(i).getText().toString();
+                realmStats.baseValue = seekBarArrayList.get(i).getProgress();
+                tempHash.add(realmStats);
             }
-            SaveLoadData.userData.temporaryTheme.tempMonster.setMonsterStats(tempHash);
+            SaveLoadData.tempData.tempMonster.setMonsterStats(tempHash);
         }
         Intent intent = new Intent(this, SetLevelActivity_.class);
         String message = "new";
@@ -291,21 +301,23 @@ public class EditMonsterActivity extends AppCompatActivity {
     }
     @Click(R.id.buttonFront)
     void buttonFrontClick(){
-        SaveLoadData.userData.temporaryTheme.tempMonster.setName(editTextName.getText().toString().trim());
-        ArrayList<String> types = new ArrayList<>();
+        SaveLoadData.tempData.tempMonster.setName(editTextName.getText().toString().trim());
+        RealmList<String> types = new RealmList<>();
         if(typeIndexList.size()!=0) {
             types.add(0, typeIndexList.get(spinnerType1.getSelectedItemPosition()));
             types.add(1, typeIndexList.get(spinnerType2.getSelectedItemPosition()));
         }
-        SaveLoadData.userData.temporaryTheme.tempMonster.setTypes(types);
-        if(textViewsArrayList.size()!=0) {
-            HashMap<String,ArrayList<String>> tempHash = new HashMap<>();
-            for(int i = 0; i<textViewsArrayList.size();i++) {
-                ArrayList<String> tempArray = new ArrayList<>();
-                tempArray.add(Integer.toString(seekBarArrayList.get(i).getProgress()));
-                tempHash.put(textViewsArrayList.get(i).getText().toString(), tempArray);
+        SaveLoadData.tempData.tempMonster.setTypes(types);
+        if (textViewsArrayList.size() != 0) {
+            RealmList<RealmStats> tempHash = new RealmList<>();
+            for (int i = 0; i < textViewsArrayList.size(); i++) {
+                RealmStats realmStats = new RealmStats();
+                realmStats.key = SaveLoadData.tempData.tempMonster.getId()+textViewsArrayList.get(i).getText().toString();
+                realmStats.name = textViewsArrayList.get(i).getText().toString();
+                realmStats.baseValue = seekBarArrayList.get(i).getProgress();
+                tempHash.add(realmStats);
             }
-            SaveLoadData.userData.temporaryTheme.tempMonster.setMonsterStats(tempHash);
+            SaveLoadData.tempData.tempMonster.setMonsterStats(tempHash);
         }
         Intent intent = new Intent(this, SetImageActivity_.class);
         String message = "front";
@@ -315,21 +327,23 @@ public class EditMonsterActivity extends AppCompatActivity {
     }
     @Click(R.id.buttonBack)
     void buttonBackClick(){
-        SaveLoadData.userData.temporaryTheme.tempMonster.setName(editTextName.getText().toString().trim());
-        ArrayList<String> types = new ArrayList<>();
+        SaveLoadData.tempData.tempMonster.setName(editTextName.getText().toString().trim());
+        RealmList<String> types = new RealmList<>();
         if(typeIndexList.size()!=0) {
             types.add(0, typeIndexList.get(spinnerType1.getSelectedItemPosition()));
             types.add(1, typeIndexList.get(spinnerType2.getSelectedItemPosition()));
         }
-        SaveLoadData.userData.temporaryTheme.tempMonster.setTypes(types);
-        if(textViewsArrayList.size()!=0) {
-            HashMap<String,ArrayList<String>> tempHash = new HashMap<>();
-            for(int i = 0; i<textViewsArrayList.size();i++) {
-                ArrayList<String> tempArray = new ArrayList<>();
-                tempArray.add(Integer.toString(seekBarArrayList.get(i).getProgress()));
-                tempHash.put(textViewsArrayList.get(i).getText().toString(), tempArray);
+        SaveLoadData.tempData.tempMonster.setTypes(types);
+        if (textViewsArrayList.size() != 0) {
+            RealmList<RealmStats> tempHash = new RealmList<>();
+            for (int i = 0; i < textViewsArrayList.size(); i++) {
+                RealmStats realmStats = new RealmStats();
+                realmStats.key = SaveLoadData.tempData.tempMonster.getId()+textViewsArrayList.get(i).getText().toString();
+                realmStats.name = textViewsArrayList.get(i).getText().toString();
+                realmStats.baseValue = seekBarArrayList.get(i).getProgress();
+                tempHash.add(realmStats);
             }
-            SaveLoadData.userData.temporaryTheme.tempMonster.setMonsterStats(tempHash);
+            SaveLoadData.tempData.tempMonster.setMonsterStats(tempHash);
         }
         Intent intent = new Intent(this, SetImageActivity_.class);
         String message = "back";
@@ -340,12 +354,12 @@ public class EditMonsterActivity extends AppCompatActivity {
 
     void loadPreviewImage(){
         listViewSelectImage.setVisibility(View.VISIBLE);
-        String tempLink = SaveLoadData.userData.temporaryTheme.tempMonster.getHyperLink1().toLowerCase().substring(SaveLoadData.userData.temporaryTheme.tempMonster.getHyperLink1().toLowerCase().length() - 4);
-        if(SaveLoadData.userData.temporaryTheme.tempMonster.getHyperLink1().trim().contains(".gif")||
+        String tempLink = SaveLoadData.tempData.tempMonster.getHyperLink1().toLowerCase().substring(SaveLoadData.tempData.tempMonster.getHyperLink1().toLowerCase().length() - 4);
+        if(SaveLoadData.tempData.tempMonster.getHyperLink1().trim().contains(".gif")||
                 tempLink.contains("png")|| tempLink.contains("jpg")||
                 tempLink.contains("jpeg")|| tempLink.contains("webp")){
             Glide.with(this)
-                    .load(SaveLoadData.userData.temporaryTheme.tempMonster.getHyperLink1())
+                    .load(SaveLoadData.tempData.tempMonster.getHyperLink1())
                     .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
                     .into(imageViewPreview);
             imageViewPreview.setBackgroundColor(0);
@@ -353,7 +367,7 @@ public class EditMonsterActivity extends AppCompatActivity {
             webViewPreview.setVisibility(View.INVISIBLE);
         }
         else{
-            webViewPreview.loadUrl(SaveLoadData.userData.temporaryTheme.tempMonster.getHyperLink1());
+            webViewPreview.loadUrl(SaveLoadData.tempData.tempMonster.getHyperLink1());
             imageViewPreview.setVisibility(View.INVISIBLE);
             webViewPreview.setVisibility(View.VISIBLE);
         }

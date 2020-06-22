@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.templateshowdown.object.EffectInfo;
 import com.example.templateshowdown.object.MoveEffect;
 import com.example.templateshowdown.object.SaveLoadData;
 
@@ -89,8 +90,8 @@ public class EditEffectActivity extends AppCompatActivity {
         spinnerVariable3 = findViewById(R.id.spinnerVariable3);
         spinnerVariable4 = findViewById(R.id.spinnerVariable4);
         if (message.equals("new")) {
-            SaveLoadData.userData.temporaryTheme.tempMove.tempEffect = new ArrayList<>();
-            SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.add(0,"");
+            SaveLoadData.tempData.tempEffect = new EffectInfo();
+            SaveLoadData.tempData.tempEffect.setId("");
             editTextVariable1.setText("1");
             editTextVariable2.setText("1");
             editTextVariable3.setText("1");
@@ -106,13 +107,13 @@ public class EditEffectActivity extends AppCompatActivity {
             setSpinnerVariable4(moveEffect.getEffectNameList().indexOf(spinnerEffect.getSelectedItem().toString()));
             changeVariableInputState("0000");
         } else {
-            SaveLoadData.userData.temporaryTheme.tempMove.tempEffect = SaveLoadData.userData.temporaryTheme.tempMove.getEffectList().get(message);
+            SaveLoadData.tempData.tempEffect = SaveLoadData.tempData.tempMove.getEffect(message);
             loadEffectList();
             spinnerEffect = findViewById(R.id.spinnerEffect);
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, effectList);
             arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerEffect.setAdapter(arrayAdapter);
-            spinnerEffect.setSelection(effectList.indexOf(moveEffect.getEffectNameList().get(Integer.parseInt(SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(1)))));
+            spinnerEffect.setSelection(effectList.indexOf(moveEffect.getEffectNameList().get( SaveLoadData.tempData.tempEffect.getEffectChoice())));
             setSpinnerVariable1(moveEffect.getEffectNameList().indexOf(spinnerEffect.getSelectedItem().toString()));
             setSpinnerVariable2(moveEffect.getEffectNameList().indexOf(spinnerEffect.getSelectedItem().toString()));
             setSpinnerVariable3(moveEffect.getEffectNameList().indexOf(spinnerEffect.getSelectedItem().toString()));
@@ -143,24 +144,24 @@ public class EditEffectActivity extends AppCompatActivity {
     }
     void loadVariable(){
         variableChanging = true;
-        editTextVariable1.setText(SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(2));
-        editTextVariable2.setText(SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(3));
-        editTextVariable3.setText(SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(4));
-        editTextVariable4.setText(SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(5));
-        if(!SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(6).equals("")) {
-            int select1 = spinnerVariableList3.indexOf(SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(6));
+        editTextVariable1.setText(SaveLoadData.tempData.tempEffect.getW());
+        editTextVariable2.setText(SaveLoadData.tempData.tempEffect.getX());
+        editTextVariable3.setText(SaveLoadData.tempData.tempEffect.getY());
+        editTextVariable4.setText(SaveLoadData.tempData.tempEffect.getZ());
+        if(!SaveLoadData.tempData.tempEffect.getSpinnerW().equals("")) {
+            int select1 = spinnerVariableList3.indexOf(SaveLoadData.tempData.tempEffect.getSpinnerW());
             spinnerVariable1.setSelection(select1);
         }
-        if(!SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(7).equals("")) {
-            int select2 = spinnerVariableList3.indexOf(SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(7));
+        if(!SaveLoadData.tempData.tempEffect.getSpinnerX().equals("")) {
+            int select2 = spinnerVariableList3.indexOf(SaveLoadData.tempData.tempEffect.getSpinnerX());
             spinnerVariable2.setSelection(select2);
         }
-        if(!SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(8).equals("")) {
-            int select3 = spinnerVariableList3.indexOf(SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(8));
+        if(!SaveLoadData.tempData.tempEffect.getSpinnerY().equals("")) {
+            int select3 = spinnerVariableList3.indexOf(SaveLoadData.tempData.tempEffect.getSpinnerY());
             spinnerVariable3.setSelection(select3);
         }
-        if(!SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(9).equals("")) {
-            int select4 = spinnerVariableList3.indexOf(SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(9));
+        if(!SaveLoadData.tempData.tempEffect.getSpinnerZ().equals("")) {
+            int select4 = spinnerVariableList3.indexOf(SaveLoadData.tempData.tempEffect.getSpinnerZ());
             spinnerVariable4.setSelection(select4);
         }
         variableChanging = false;
@@ -168,25 +169,25 @@ public class EditEffectActivity extends AppCompatActivity {
 
     @Click(R.id.buttonSave)
     void buttonSaveClick(){
-        if(!SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(0).equals("")) {
-            String effectId = SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(0);
-            SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.clear();
-            SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.add(0,effectId);
+        if(!SaveLoadData.tempData.tempEffect.getId().equals("")) {
+            String effectId = SaveLoadData.tempData.tempEffect.getId();
+            SaveLoadData.tempData.tempEffect = new EffectInfo();
+            SaveLoadData.tempData.tempEffect.setId(effectId);
         }
         else {
-            SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.clear();
-            SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.add(0, SaveLoadData.userData.getUserName() + gmtDateFormat.format(new Date()));
+            SaveLoadData.tempData.tempEffect = new EffectInfo();
+            SaveLoadData.tempData.tempEffect.setId(SaveLoadData.userData.getUserName() + gmtDateFormat.format(new Date()));
         }
-        SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.add(1,Integer.toString(effectIndex));
-        SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.add(2,editTextVariable1.getText()!=null?editTextVariable1.getText().toString().trim():"1");
-        SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.add(3,editTextVariable2.getText()!=null?editTextVariable2.getText().toString().trim():"1");
-        SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.add(4,editTextVariable3.getText()!=null?editTextVariable3.getText().toString().trim():"1");
-        SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.add(5,editTextVariable4.getText()!=null?editTextVariable4.getText().toString().trim():"1");
-        SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.add(6,spinnerVariable1.getSelectedItem()!=null?spinnerVariable1.getSelectedItem().toString():"");
-        SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.add(7,spinnerVariable2.getSelectedItem()!=null?spinnerVariable2.getSelectedItem().toString():"");
-        SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.add(8,spinnerVariable3.getSelectedItem()!=null?spinnerVariable3.getSelectedItem().toString():"");
-        SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.add(9,spinnerVariable4.getSelectedItem()!=null?spinnerVariable4.getSelectedItem().toString():"");
-        SaveLoadData.userData.temporaryTheme.tempMove.addToEffectList();
+        SaveLoadData.tempData.tempEffect.setEffectChoice(effectIndex);
+        SaveLoadData.tempData.tempEffect.setW(editTextVariable1.getText()!=null?editTextVariable1.getText().toString().trim():"1");
+        SaveLoadData.tempData.tempEffect.setX(editTextVariable2.getText()!=null?editTextVariable2.getText().toString().trim():"1");
+        SaveLoadData.tempData.tempEffect.setY(editTextVariable3.getText()!=null?editTextVariable3.getText().toString().trim():"1");
+        SaveLoadData.tempData.tempEffect.setZ(editTextVariable4.getText()!=null?editTextVariable4.getText().toString().trim():"1");
+        SaveLoadData.tempData.tempEffect.setSpinnerW(spinnerVariable1.getSelectedItem()!=null?spinnerVariable1.getSelectedItem().toString():"");
+        SaveLoadData.tempData.tempEffect.setSpinnerX(spinnerVariable2.getSelectedItem()!=null?spinnerVariable2.getSelectedItem().toString():"");
+        SaveLoadData.tempData.tempEffect.setSpinnerY(spinnerVariable3.getSelectedItem()!=null?spinnerVariable3.getSelectedItem().toString():"");
+        SaveLoadData.tempData.tempEffect.setSpinnerZ(spinnerVariable4.getSelectedItem()!=null?spinnerVariable4.getSelectedItem().toString():"");
+        SaveLoadData.tempData.tempMove.addToEffectList(SaveLoadData.tempData.tempEffect);
         Intent intent = new Intent(this, EditMoveActivity_.class);
         String message = "edit";
         intent.putExtra(EXTRA_MESSAGE, message);
@@ -194,8 +195,8 @@ public class EditEffectActivity extends AppCompatActivity {
     }
     @Click(R.id.buttonDelete)
     void buttonDeleteClick(){
-        if(SaveLoadData.userData.temporaryTheme.tempMove.getEffectList().containsKey(SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(0))){
-            SaveLoadData.userData.temporaryTheme.tempMove.getEffectList(true).remove(SaveLoadData.userData.temporaryTheme.tempMove.tempEffect.get(0));
+        if(!SaveLoadData.tempData.tempMove.getEffect(SaveLoadData.tempData.tempEffect.getId()).equals("")){
+            SaveLoadData.tempData.tempMove.removeEffectList(SaveLoadData.tempData.tempEffect);
         }
         Intent intent = new Intent(this, EditMoveActivity_.class);
         String message = "edit";

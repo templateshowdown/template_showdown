@@ -1,205 +1,73 @@
+/*
 package com.example.templateshowdown.object;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import okhttp3.internal.Internal;
 
-public class BattleManager  extends RealmObject { //feed strings and grab monsters involved to manage everything that happens in battle
-    static private HashMap<String, Monster> monsterInvolved = new HashMap<>();
-
-    static private HashMap<String, HashMap<String,String>> monsterUsePoint = new HashMap<>();
-    //transform=true,false
-    //mimic = replacedMoveId,usePoint/MaxUsePoint  ,false
-    //moveId= usePoint/maxUsePoint
-    //moveId,transform =usePoint/maxUsePoint
-
-    static private HashMap<String, HashMap<String,String>> monsterStatistic = new HashMap<>();
-    //Level from extra value
-    //baseAttack from extra value
-    //baseSpecialAttack from extra value
-    //baseDefense from extra value
-    //baseSpecialDefense from extra value
-    //baseSpeed from extra value
-    //baseHP from extra value
-    //baseMP from extra value
-    //baseEvasion from extra value
-    //baseAccuracy from extra value
-    //baseCritical from extra value
-
-    //originalAttack before mux
-    //originalSpecialAttack before mux
-    //originalDefense before mux
-    //originalSpecialDefense before mux
-    //originalSpeed before mux
-    //maxHP from calculation
-    //maxMP from calculation
-    //originalEvasion before mux
-    //originalAccuracy before mux
-    //originalCritical before mux
-
-    //tierAttack
-    //tierSpecialAttack
-    //tierDefense
-    //tierSpecialDefense
-    //tierSpeed
-    //tierEvasion
-    //tierAccuracy
-    //tierCritical
-
-    //currentAttack
-    //currentSpecialAttack
-    //currentDefense
-    //currentSpecialDefense
-    //currentSpeed
-    //currentEvasion
-    //currentAccuracy
-    //currentCritical
-    //currentHP
-    //currentMP
-
-    static private HashMap<String, HashMap<String,String>> monsterStatus = new HashMap<>();
-    //status1 statusName
-    //status1Turn TurnLeft
-    //status2 statusName
-    //status2Turn TurnLeft
-    //chargeTime
-    //trapTurn
-    //trapDamage
-    //leeched
-    //stunned
-    //positionStatus (Fly dig charge dive)
-    //lockTurn deplete to 0 means no longer locked
-    //lockedMove get from lastUsedMove when disabled
-    //shieldAttack
-    //shieldTurn
-    //barrierSpecial
-    //barrierTurn
-    //protectStatistic false
-    //berserkTurn
-    //decoy = true,false
-    //decoyHP = health
-    static private HashMap<String, HashMap<String,String>> monsterInfo = new HashMap<>();
-    //damage taken this turn before status
-    //physicalDamage taken this turn
-    //specialDamage taken this turn
-    //lastUsedMove stored after executing move
-    //coinEarn
-    private HashMap<String,String> activeMonster = new HashMap<>();
-    private ArrayList<String> tempLoadOutId = new ArrayList<>();
-    private ArrayList<String> battleLog = new ArrayList<>();
-    private HashMap<String, String[]> monsterCodeHashMap = new HashMap<>();
-    private ArrayList<String> monsterPriority = new ArrayList<>();
+public class BattleManager { //feed strings and grab monsters involved to manage everything that happens in battle
+    static public BattleLog battleLog = new BattleLog();
+    public int turn = 0;
+    private ArrayList<BattleAction> monsterPriority = new ArrayList<>();
     private int diceRandom;
-
     public void initialiseBattle(){
-        monsterInvolved.putAll(SaveLoadData.userData.temporaryTheme.getTempLoadOut());
-        monsterInvolved.putAll(SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut());
-        for(String key: monsterInvolved.keySet()){
-            if(monsterInvolved.get(key).getBattleState().equals("Starter")){
-                activeMonster.put(key,key);
-            }
-            monsterStatistic.put(key,updateStats(key,true,true));
-
-            monsterStatus.put(key,updateStatus(key,true));
-
-            monsterInfo.put(key,updateInfo(true));
-
-            HashMap<String,String> tempHash = new HashMap<>();
-            tempHash.put("transform","false");
-            for(int i = 0;i<monsterInvolved.get(key).getMoveList().size();i++){
-                String tempUsePoint = SaveLoadData.userData.temporaryTheme.getMoveList().get(monsterInvolved.get(key).getMoveList().get(i)).getUseCount()+"/"+SaveLoadData.userData.temporaryTheme.getMoveList().get(monsterInvolved.get(key).getMoveList().get(i)).getUseCount();
-                tempHash.put(key,tempUsePoint);
-            }
-            monsterUsePoint.put(key,tempHash);
-        }
+        battleLog.loadOuts.add(SaveLoadData.tempData.tempLoadOut.get(0));
+        battleLog.loadOuts.add(SaveLoadData.tempData.tempLoadOut.get(1));
     }
-
-    public HashMap<String,String> updateInfo(boolean initialise){
-        HashMap<String,String> tempHash = new HashMap<>();
-        if(initialise) {
-            tempHash.put("totalDamage", "0");
-            tempHash.put("physicalDamage","0");
-            tempHash.put("specialDamage","0");
-            tempHash.put("lastUsedMove","");
-        }
-        return tempHash;
-    }
-
-    public HashMap<String,String> updateStatus(String key,boolean initialise){
-        HashMap<String,String> tempHash = new HashMap<>();
-        if(initialise) {
-            tempHash.put("status1", "normal");
-            tempHash.put("status1Turn", "-1");
-            tempHash.put("status2", "normal");
-            tempHash.put("status2Turn", "-1");
-            tempHash.put("chargeTime", "-1");
-            tempHash.put("trapTurn", "-1");
-            tempHash.put("trapDamage", "0");
-            tempHash.put("leeched", "false");
-            tempHash.put("stunned", "false");
-            tempHash.put("positionStatus", "normal");
-            tempHash.put("lockTurn", "-1");
-            tempHash.put("lockedMove", "");
-        }
-        return tempHash;
-    }
-    public HashMap<String,String> updateStats(String key,boolean initialise,boolean refresh){
-        HashMap<String,String> tempHash = new HashMap<>();
-        tempHash.put("Level", monsterInvolved.get(key).getExtraVar().get("Level"));
-        if(refresh) {
-            tempHash.put("baseAttack", monsterInvolved.get(key).getExtraVar().get("Attack"));
-            tempHash.put("baseSpecialAttack", monsterInvolved.get(key).getExtraVar().get("Special Attack"));
-            tempHash.put("baseDefense", monsterInvolved.get(key).getExtraVar().get("Defense"));
-            tempHash.put("baseSpecialDefense", monsterInvolved.get(key).getExtraVar().get("Special Defense"));
-            tempHash.put("baseSpeed", monsterInvolved.get(key).getExtraVar().get("Speed"));
-            tempHash.put("baseHP", monsterInvolved.get(key).getExtraVar().get("Hit Point"));
-            tempHash.put("baseMP", monsterInvolved.get(key).getExtraVar().get("Move Point"));
-            tempHash.put("baseEvasion", monsterInvolved.get(key).getExtraVar().get("Evasion"));
-            tempHash.put("baseAccuracy", monsterInvolved.get(key).getExtraVar().get("Accuracy"));
-            tempHash.put("baseCritical", monsterInvolved.get(key).getExtraVar().get("Critical"));
-
-            tempHash.put("originalAttack", monsterInvolved.get(key).getExtraVar().get("Attack"));
-            tempHash.put("originalSpecialAttack", monsterInvolved.get(key).getExtraVar().get("Special Attack"));
-            tempHash.put("originalDefense", monsterInvolved.get(key).getExtraVar().get("Defense"));
-            tempHash.put("originalSpecialDefense", monsterInvolved.get(key).getExtraVar().get("Special Defense"));
-            tempHash.put("originalSpeed", monsterInvolved.get(key).getExtraVar().get("Speed"));
-            tempHash.put("originalHP", monsterInvolved.get(key).getExtraVar().get("Hit Point"));
-            tempHash.put("originalMP", monsterInvolved.get(key).getExtraVar().get("Move Point"));
-            tempHash.put("originalEvasion", monsterInvolved.get(key).getExtraVar().get("Evasion"));
-            tempHash.put("originalAccuracy", monsterInvolved.get(key).getExtraVar().get("Accuracy"));
-            tempHash.put("originalCritical", monsterInvolved.get(key).getExtraVar().get("Critical"));
-
-            tempHash.put("tierAttack","0");
-            tempHash.put("tierSpecialAttack","0");
-            tempHash.put("tierDefense","0");
-            tempHash.put("tierSpecialDefense","0");
-            tempHash.put("tierSpeed","0");
-            tempHash.put("tierEvasion", "0");
-            tempHash.put("tierAccuracy","0");
-            tempHash.put("tierCritical","0");
-            if(initialise) {
-                tempHash.put("currentHP", monsterInvolved.get(key).getExtraVar().get("Hit Point"));
-                tempHash.put("currentMP", monsterInvolved.get(key).getExtraVar().get("Move Point"));
+    public void setMonsterPriority(){
+        monsterPriority.clear();
+        for(BattleAction battleAction : battleLog.actionLog) {
+            if(battleAction.index == turn) {
+                monsterPriority.add(battleAction);
             }
         }
-        tempHash.put("currentAttack",monsterInvolved.get(key).getExtraVar().get("Attack"));
-        tempHash.put("currentSpecialAttack",monsterInvolved.get(key).getExtraVar().get("Special Attack"));
-        tempHash.put("currentDefense",monsterInvolved.get(key).getExtraVar().get("Defense"));
-        tempHash.put("currentSpecialDefense",monsterInvolved.get(key).getExtraVar().get("Special Defense"));
-        tempHash.put("currentSpeed",monsterInvolved.get(key).getExtraVar().get("Speed"));
-
-        tempHash.put("currentEvasion",monsterInvolved.get(key).getExtraVar().get("Evasion"));
-        tempHash.put("currentAccuracy",monsterInvolved.get(key).getExtraVar().get("Accuracy"));
-        tempHash.put("currentCritical",monsterInvolved.get(key).getExtraVar().get("Critical"));
-        return tempHash;
+        battleEvent();
     }
 
+    public ArrayList<BattleAction> bubbleSort(ArrayList<BattleAction> arr) {
+        int n = arr.size();
+        BattleAction temp;
+        for(int i=0; i < n; i++) {
+            for (int j = 1; j < (n - i); j++) {
+                if (Integer.parseInt(SaveLoadData.tempData.temporaryTheme.getMove(arr.get(j - 1).action).getPriority()) <
+                        Integer.parseInt(SaveLoadData.tempData.temporaryTheme.getMove(arr.get(j).action).getPriority())) {
+                    temp = arr.get(j - 1);
+                    arr.set(j - 1, arr.get(j));
+                    arr.set(j, temp);
+                } else if (Integer.parseInt(SaveLoadData.tempData.temporaryTheme.getMove(arr.get(j - 1).action).getPriority()) ==
+                        Integer.parseInt(SaveLoadData.tempData.temporaryTheme.getMove(arr.get(j).action).getPriority())) {
+                    if (getMonster(arr.get(j-1).user).getRealmMonsterStat("Speed").value < getMonster(arr.get(j).user).getRealmMonsterStat("Speed").value) {
+                        temp = arr.get(j - 1);
+                        arr.set(j - 1, arr.get(j));
+                        arr.set(j, temp);
+                    }
+                    else if(getMonster(arr.get(j-1).user).getRealmMonsterStat("Speed").value == getMonster(arr.get(j).user).getRealmMonsterStat("Speed").value){
+                        if(arr.get(j-1).rng < arr.get(j).rng){
+                            temp = arr.get(j - 1);
+                            arr.set(j - 1, arr.get(j));
+                            arr.set(j, temp);
+                        }
+                    }
+                }
+            }
+        }
+        return arr;
+    }
 
-
-
-    public void battleEvent(HashMap<String, String> monsterCode) {
+    public Monster getMonster(String battleId){
+        for(LoadOut loadOut: battleLog.loadOuts){
+            for(Monster monster: loadOut.getMonsterTeam()){
+                if(monster.getBattleId().equals(battleId)){
+                    return monster;
+                }
+            }
+        }
+        return new Monster();
+    }
+    public void battleEvent() {
         // code protocol HashMap<MonsterLoadOutID,String,String>
         // 1. Action<Move,Switch,item,Ability>
         // 2. Id<MoveID,MonsterLoadOutID,ItemID,AbilityID>
@@ -207,68 +75,21 @@ public class BattleManager  extends RealmObject { //feed strings and grab monste
         // 4. Target
         // 5. damage taken this turn
         // 6. damage stored over multiple turn
-
-        for (String key : monsterCode.keySet()) {
-            monsterCodeHashMap.put(key, monsterCode.get(key).split(","));
-        }
         diceRandom = 0;
-        for(String key : monsterCodeHashMap.keySet()){
-            diceRandom += Integer.parseInt(monsterCodeHashMap.get(key)[3]);
+        for(BattleAction key : monsterPriority){
+            diceRandom += key.rng;
         }
-        monsterPriority = sortPriority(monsterCodeHashMap);
+        monsterPriority = bubbleSort(monsterPriority);
 
         for(int i = monsterPriority.size()-1; i>=0;i--){
-            useMove(monsterPriority.get(i),monsterCodeHashMap.get(monsterPriority.get(i)));
+            useMove(monsterPriority.get(i),monsterPriority.get(i).action);
         }
     }
 
-    public ArrayList<String> sortPriority(HashMap<String, String[]> monsterCodeHashMap) {
-        ArrayList<String> priorityOrder = new ArrayList<>();
-        for(int i = -10;i<11;i++){
-            int j =0;
-            ArrayList<String> orderArray = new ArrayList<>();
-            for(String key: monsterCodeHashMap.keySet()){
-                if(monsterCodeHashMap.get(key)[1].equals("Move")&&
-                        Integer.parseInt(SaveLoadData.userData.temporaryTheme.getMoveList().get(monsterCodeHashMap.get(key)[2]).getPriority())==i){
-                    orderArray.add(key);
-                    j++;
-                }
-            }
-            String[] order = new String[j];
-            for(int k = 0; k<orderArray.size();k++){
-                order[k] = orderArray.get(k);
-            }
-            for(int x=0; x < orderArray.size(); x++){
-                for(int y=1; y < (orderArray.size()-x); y++){
-                    if(Integer.parseInt(monsterInvolved.get(order[j-1]).getExtraVar().get("Speed")) > Integer.parseInt(monsterInvolved.get(order[y]).getExtraVar().get("Speed"))){
-                        String temp = order[y-1];
-                        order[y-1] = order[y];
-                        order[y] = temp;
-                    }
-                    else if(Integer.parseInt(monsterInvolved.get(order[j-1]).getExtraVar().get("Speed")) == Integer.parseInt(monsterInvolved.get(order[y]).getExtraVar().get("Speed"))){
-                        if(diceRandom%2==0){
-                            String temp = order[y-1];
-                            order[y-1] = order[y];
-                            order[y] = temp;
-                        }
-                    }
-                }
-            }
-            for(int w=0; w<orderArray.size();w++){
-                priorityOrder.add(order[w]);
-            }
-        }
-        return priorityOrder;
-    }
 
-
-
-    public void useMove(String monsterKey,String[] monsterMove) {
-        int personalRandom = 0;
-        for(int i = 0; i<monsterKey.length();i++){
-            personalRandom+= Character.getNumericValue(monsterKey.charAt(i));
-        }
-        Move tempMove = SaveLoadData.userData.temporaryTheme.getMoveList().get(monsterMove[2]);
+    public void useMove(BattleAction monsterKey,String monsterMove) {
+        int personalRandom = monsterKey.rng;
+        Move tempMove = SaveLoadData.tempData.temporaryTheme.getMove(monsterMove);
         int damage = 0;
         int damageTaken = 0;
         int storedDamage = 0;
@@ -286,36 +107,39 @@ public class BattleManager  extends RealmObject { //feed strings and grab monste
         boolean instantKO = false;
         boolean flee = false;
         String typeChangeId = "";
-        String enemyKey = activeMonster.get(monsterCodeHashMap.get(monsterKey)[4]);
+        String enemyKey = monsterKey.target;
         ArrayList<String> selfStatusChange = new ArrayList<>();
         ArrayList<String> opponentStatusChange = new ArrayList<>();
         HashMap<String,Integer> selfStatisticChange = new HashMap<>();
         HashMap<String,Integer> targetStatisticChange = new HashMap<>();
-        if(!monsterKey.equals(monsterPriority.get(monsterPriority.size()-1)) && monsterCodeHashMap.get(monsterKey)[5]!=null){
-            damageTaken = Integer.parseInt(monsterCodeHashMap.get(monsterKey)[5]);
+        for(Battlefield battlefield:  battleLog.battlefields){
+            if(battlefield.monsterKey.equals(monsterKey.user)){
+                damageTaken = battlefield.physicalTaken + battlefield.specialTaken;
+            }
         }
-        for (String key : tempMove.getEffectList().keySet()) { //before using the move
-            switch (Integer.parseInt(tempMove.getEffectList().get(key).get(1))) {
+
+        for (EffectInfo key : tempMove.getEffectList()) { //before using the move
+            switch (key.getEffectChoice()) {
                 case 12:
-                    waitAndExecute(personalRandom,tempMove.getEffectList().get(key).get(6),monsterKey);
+                    waitAndExecute(personalRandom,key.getSpinnerW(),monsterKey.user);
                     break;
                 case 15:
-                    statusRequirement = statusRequirement(personalRandom,tempMove.getEffectList().get(key).get(6),monsterKey);
+                    statusRequirement = statusRequirement(personalRandom,key.getSpinnerW(),monsterKey.user);
                     break;
                 case 17:
-                    statusMux = statusAdvantage(personalRandom,tempMove.getEffectList().get(key).get(2), tempMove.getEffectList().get(key).get(7),monsterKey);
+                    statusMux = statusAdvantage(personalRandom,key.getW(), key.getSpinnerX(),monsterKey.target);
                     break;
                 case 20:
-                    statisticRequirement = statisticRequirement(personalRandom,tempMove.getEffectList().get(key).get(6), tempMove.getEffectList().get(key).get(7),monsterKey);
+                    statisticRequirement = statisticRequirement(personalRandom,key.getSpinnerW(), key.getSpinnerX(),monsterKey.user);
                     break;
                 case 26:
-                    roulette(personalRandom,monsterKey);
+                    roulette(personalRandom);
                     break;
                 case 28:
-                    copyAndUse(personalRandom,monsterKey);
+                    copyAndUse(personalRandom);
                     break;
                 case 35:
-                    doesNothing(personalRandom,monsterKey);
+                    doesNothing(personalRandom);
                     break;
                 case 38:
                     neverMiss = true;
@@ -326,7 +150,7 @@ public class BattleManager  extends RealmObject { //feed strings and grab monste
             }
         }
         if(statisticRequirement && statusRequirement) {
-            boolean hitCheck = ((personalRandom + 8 * diceRandom) % 100<Integer.parseInt(tempMove.getAccuracy())*accuracyEvasionRate(monsterStatistic.get(monsterKey).get("tierAccuracy"),monsterStatistic.get(enemyKey).get("tierEvasion")));
+            boolean hitCheck = ((personalRandom + 8 * diceRandom) % 100<Integer.parseInt(tempMove.getAccuracy())*accuracyEvasionRate(battleLog.loadOuts.get()monsterKey.player,monsterStatistic.get(enemyKey).get("tierEvasion")));
             if (neverMiss || (hitCheck&&!monsterStatus.get(enemyKey).get("positionStatus").equals("dig")&&!monsterStatus.get(enemyKey).get("positionStatus").equals("fly"))) {
                 for (String key : tempMove.getEffectList().keySet()) { // after accuracy calculation, determine damage cause by attack, if damage = 0; damage will use power to calculate
                     switch (Integer.parseInt(tempMove.getEffectList().get(key).get(1))) {
@@ -1153,7 +977,7 @@ public class BattleManager  extends RealmObject { //feed strings and grab monste
         }
     }
 
-    public void roulette(int personalRandom,String key) {
+    public void roulette(int personalRandom) {
         int moveIndex = (personalRandom + 5 * diceRandom)%SaveLoadData.userData.temporaryTheme.getMoveList().size();
         int i = 0;
         for(String moveKey: SaveLoadData.userData.temporaryTheme.getMoveList().keySet()){
@@ -1171,7 +995,7 @@ public class BattleManager  extends RealmObject { //feed strings and grab monste
         monsterUsePoint.get(key).put(monsterInfo.get(enemyKey).get("lastUsedMove"),"5/"+SaveLoadData.userData.temporaryTheme.getMoveList().get(monsterInfo.get(enemyKey).get("lastUsedMove")).getUseCount());
     }
 
-    public void copyAndUse(int personalRandom,String key) {
+    public void copyAndUse(int personalRandom) {
         String enemyKey = activeMonster.get(monsterCodeHashMap.get(key)[4]);
         SaveLoadData.userData.temporaryTheme.getMoveList().get(monsterInfo.get(enemyKey).get("lastUsedMove"));
     }
@@ -1241,7 +1065,7 @@ public class BattleManager  extends RealmObject { //feed strings and grab monste
         }
     }
 
-    public void doesNothing(int personalRandom,String key) {
+    public void doesNothing(int personalRandom) {
 
     }
 
@@ -1287,3 +1111,4 @@ public class BattleManager  extends RealmObject { //feed strings and grab monste
 }
 
 
+*/

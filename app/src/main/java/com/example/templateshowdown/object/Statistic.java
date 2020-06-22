@@ -6,7 +6,7 @@ import java.util.List;
 
 import io.realm.RealmObject;
 
-public class Statistic  extends RealmObject {
+public class Statistic {
     private HashMap<String, ArrayList<String>> monsterStats = new HashMap<>();
     private ArrayList<String> statsNameList = new ArrayList<>();
     private ArrayList<String> statsDescriptionList = new ArrayList<>();

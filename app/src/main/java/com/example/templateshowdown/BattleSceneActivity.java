@@ -23,14 +23,11 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.example.templateshowdown.BattleOptionActivity;
-import com.example.templateshowdown.BattleOptionActivity_;
-import com.example.templateshowdown.EditLoadoutActivity;
-import com.example.templateshowdown.EditLoadoutActivity_;
-import com.example.templateshowdown.MainActivity;
-import com.example.templateshowdown.R;
+
+import com.example.templateshowdown.object.EffectInfo;
 import com.example.templateshowdown.object.Monster;
 import com.example.templateshowdown.object.MoveEffect;
+import com.example.templateshowdown.object.RealmHash;
 import com.example.templateshowdown.object.SaveLoadData;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.squareup.picasso.Picasso;
@@ -133,7 +130,6 @@ public class BattleSceneActivity extends AppCompatActivity {
         gmtDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         WebAction();
         loadPreviewImage();
-        initialiseStats(true);
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -151,27 +147,27 @@ public class BattleSceneActivity extends AppCompatActivity {
 
 
     void monsterChosen(String keyData){
-        SaveLoadData.userData.temporaryTheme.tempMonster = new Monster(SaveLoadData.userData.temporaryTheme.getMonsterList().get(keyData));
+        SaveLoadData.tempData.tempMonster = SaveLoadData.tempData.temporaryTheme.getMonster(keyData);
     }
     void loadMonsterList() {
         linearLayoutChoice.removeAllViews();
         String monsterId = playerMonsterId;
-        for(String key : SaveLoadData.userData.temporaryTheme.getTempLoadOut().keySet()) {
-            if (SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getBattleState().equals("Fighter")) {
+        for(Monster key : SaveLoadData.tempData.tempLoadOut.get(0).getMonsterTeam()) {
+            if (key.getBattleState().equals("Fighter")) {
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View view = inflater.inflate(R.layout.layout_battle_monster_scroll, null);
                 TextView textViewMonsterName = view.findViewById(R.id.textViewMonsterName);
-                textViewMonsterName.setText(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getName());
+                textViewMonsterName.setText(key.getName());
                 ImageView imageViewColorType1 = view.findViewById(R.id.imageViewColorType1);
-                imageViewColorType1.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().
-                        get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getTypes().get(0)).getColor());
+                imageViewColorType1.setBackgroundColor(SaveLoadData.tempData.temporaryTheme.getType
+                        (key.getTypes().get(0)).getColor());
                 ImageView imageViewColorType2 = view.findViewById(R.id.imageViewColorType2);
-                imageViewColorType2.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().
-                        get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getTypes().get(1)).getColor());
+                imageViewColorType2.setBackgroundColor(SaveLoadData.tempData.temporaryTheme.getType
+                        (key.getTypes().get(1)).getColor());
                 TextView textViewStatus = view.findViewById(R.id.textViewStatus);
-                textViewStatus.setText(monsterStatus(key));
+                textViewStatus.setText(monsterStatus(key.getBattleId()));
                 final TextView textViewMoveText = view.findViewById(R.id.textViewMoveText);
-                textViewMoveText.setText(moveText(key));
+                textViewMoveText.setText(moveText(key.getBattleId()));
                 textViewMoveText.setVisibility(View.GONE);
                 final Button buttonDetail = view.findViewById(R.id.buttonDetail);
                 Button buttonChoose = view.findViewById(R.id.buttonChoose);
@@ -200,23 +196,20 @@ public class BattleSceneActivity extends AppCompatActivity {
     void loadMoveList() {
         linearLayoutChoice.removeAllViews();
         String monsterId = playerMonsterId;
-        for(int i =0; i< SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().size();i++){
-            String moveKey = SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(i);
+        for(int i =0; i< SaveLoadData.tempData.tempLoadOut.get(0).getMonster(monsterId).getMoveList().size();i++){
+            String moveKey = SaveLoadData.tempData.tempLoadOut.get(0).getMonster(monsterId).getMoveList().get(i);
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View view = inflater.inflate(R.layout.layout_battle_move_scroll, null);
             TextView textViewMoveName = view.findViewById(R.id.textViewMoveName);
-            textViewMoveName.setText(SaveLoadData.userData.temporaryTheme.getMoveList().get(moveKey).getName());
+            textViewMoveName.setText(SaveLoadData.tempData.temporaryTheme.getMove(moveKey).getName());
             ImageView imageViewColorType = view.findViewById(R.id.imageViewColorType);
             TextView textViewPowerAccuracy =view.findViewById(R.id.textViewPowerAccuracy);
-            imageViewColorType.setBackgroundColor(SaveLoadData.userData.temporaryTheme.getTypeList().
-                    get(SaveLoadData.userData.temporaryTheme.getMoveList().
-                            get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().
-                                    get(monsterId).getMoveList().get(i)).getTypeId()).getColor());
+            imageViewColorType.setBackgroundColor(SaveLoadData.tempData.temporaryTheme.getType(SaveLoadData.tempData.temporaryTheme.getMove(moveKey).getTypeId()).getColor());
             TextView textViewUsePoint = view.findViewById(R.id.textViewUsePoint);
-            textViewPowerAccuracy.setText("Power:"+SaveLoadData.userData.temporaryTheme.getMoveList().get(moveKey).getPower()+"\n"+"Accuracy:"+SaveLoadData.userData.temporaryTheme.getMoveList().get(moveKey).getAccuracy());
-            textViewUsePoint.setText(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getExtraVar().get(moveKey)+"/"+SaveLoadData.userData.temporaryTheme.getMoveList().get(moveKey).getUseCount());
+            textViewPowerAccuracy.setText("Power:"+SaveLoadData.tempData.temporaryTheme.getMove(moveKey).getPower()+"\n"+"Accuracy:"+SaveLoadData.tempData.temporaryTheme.getMove(moveKey).getAccuracy());
+            textViewUsePoint.setText(SaveLoadData.tempData.tempLoadOut.get(0).getMonster(monsterId).getExtraVarRealmHash(moveKey).value+"/"+SaveLoadData.tempData.temporaryTheme.getMove(moveKey).getUseCount());
             final TextView textViewEffectText = view.findViewById(R.id.textViewEffectText);
-            textViewEffectText.setText(updateDescription(i,monsterId));
+            textViewEffectText.setText(updateDescription(moveKey,monsterId));
             textViewEffectText.setVisibility(View.GONE);
             final Button buttonDetail = view.findViewById(R.id.buttonDetail);
             Button buttonChoose = view.findViewById(R.id.buttonChoose);
@@ -242,72 +235,18 @@ public class BattleSceneActivity extends AppCompatActivity {
             linearLayoutChoice.addView(view);
         }
     }
-    void initialiseStats(boolean newBattle){
-        if(newBattle){
-            for(String key : SaveLoadData.userData.temporaryTheme.getTempLoadOut().keySet()) {
-                if (SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getBattleState().equals("Starter")||
-                        SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getBattleState().equals("Fighter")){
-                    for(String keyData : SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getMonsterStats().keySet()){
-                        float baseValue = (Integer.parseInt(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getMonsterStats().get(keyData).get(0))/10f)*255f+10f;
-                        if(keyData.equals("Hit Point")){
-                            String hitPoint =  Integer.toString( (int) ((((2f *baseValue) + 100f) *
-                                    Integer.parseInt(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getExtraVar().get("Level"))) / 100f + 10f));
-                            SaveLoadData.userData.temporaryTheme.getTempLoadOut(true).get(key).getMonsterStats(true).get(keyData).add(1,hitPoint);
-                            SaveLoadData.userData.temporaryTheme.getTempLoadOut(true).get(key).getMonsterStats(true).get(keyData).add(2,hitPoint);
-                        }
-                        else {
-                            String maxValue = Integer.toString( (int)((((2f * baseValue)
-                                    * Integer.parseInt(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getExtraVar().get("Level"))) / 100f) + 5f));
-                            SaveLoadData.userData.temporaryTheme.getTempLoadOut(true).get(key).getMonsterStats(true).get(keyData).add(1,maxValue);
-                            SaveLoadData.userData.temporaryTheme.getTempLoadOut(true).get(key).getMonsterStats(true).get(keyData).add(2,maxValue);
-                        }
-                    }
-                    for (int i = 0; i < SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getMoveList().size(); i++) {
-                        String keyData = SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getMoveList().get(i);
-                        SaveLoadData.userData.temporaryTheme.getTempLoadOut(true).get(key).
-                                getExtraVar(true).put(keyData, SaveLoadData.userData.temporaryTheme.getMoveList().get(keyData).getUseCount());
-                    }
-                }
-            }
 
-            for(String key : SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().keySet()) {
-                if (SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getBattleState().equals("Starter")||
-                        SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getBattleState().equals("Fighter")){
-                    for(String keyData : SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getMonsterStats().keySet()){
-                        float baseValue = (Integer.parseInt(SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getMonsterStats().get(keyData).get(0))/10f)*255f+10f;
-                        if(keyData.equals("Hit Point")){
-                            String hitPoint =  Integer.toString( (int) ((((2f *baseValue) + 100f) *
-                                    Integer.parseInt(SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getExtraVar().get("Level"))) / 100f + 10f));
-                            SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut(true).get(key).getMonsterStats(true).get(keyData).add(1,hitPoint);
-                            SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut(true).get(key).getMonsterStats(true).get(keyData).add(2,hitPoint);
-                        }
-                        else {
-                            String maxValue = Integer.toString( (int)((((2f * baseValue)
-                                    * Integer.parseInt(SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getExtraVar().get("Level"))) / 100f) + 5f));
-                            SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut(true).get(key).getMonsterStats(true).get(keyData).add(1,maxValue);
-                            SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut(true).get(key).getMonsterStats(true).get(keyData).add(2,maxValue);
-                        }
-                    }
-                    for (int i = 0; i < SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getMoveList().size(); i++) {
-                        String keyData = SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getMoveList().get(i);
-                        SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut(true).get(key).
-                                getExtraVar(true).put(keyData, SaveLoadData.userData.temporaryTheme.getMoveList().get(keyData).getUseCount());
-                    }
-                }
-            }
-        }
-    }
 
     void loadPreviewImage() {
-        for (String key : SaveLoadData.userData.temporaryTheme.getTempLoadOut().keySet()) {
-            if (SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getBattleState().equals("Starter")) {
-                playerMonsterId = key;
-                String tempLink = SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getHyperLink2().toLowerCase().substring(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getHyperLink2().toLowerCase().length() - 4);
-                if (SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getHyperLink2().trim().contains(".gif") ||
+        for (Monster key : SaveLoadData.tempData.tempLoadOut.get(0).getMonsterTeam()) {
+            if (key.getBattleState().equals("Starter")) {
+                playerMonsterId = key.getBattleId();
+                String tempLink = key.getHyperLink2().toLowerCase().substring(key.getHyperLink2().toLowerCase().length() - 4);
+                if (key.getHyperLink2().trim().contains(".gif") ||
                         tempLink.contains("png") || tempLink.contains("jpg") ||
                         tempLink.contains("jpeg") || tempLink.contains("webp")) {
                     Glide.with(this)
-                            .load(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getHyperLink2())
+                            .load(key.getHyperLink2())
                             .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
                             .into(imageViewPlayerPreview);
                     imageViewPlayerPreview.setBackgroundColor(0);
@@ -315,19 +254,19 @@ public class BattleSceneActivity extends AppCompatActivity {
                     webViewPlayerPreview.setVisibility(View.INVISIBLE);
                     break;
                 } else {
-                    webViewPlayerPreview.loadUrl(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getHyperLink2());
+                    webViewPlayerPreview.loadUrl(key.getHyperLink2());
                     imageViewPlayerPreview.setVisibility(View.INVISIBLE);
                     webViewPlayerPreview.setVisibility(View.VISIBLE);
                     break;
                 }
             }
-            if (SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getHyperLink1() != null) {
-                String tempLink = SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getHyperLink1().toLowerCase().substring(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getHyperLink1().toLowerCase().length() - 4);
-                if (SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getHyperLink1().trim().contains(".gif") ||
+            if (key.getHyperLink1() != null) {
+                String tempLink = key.getHyperLink1().toLowerCase().substring(key.getHyperLink1().toLowerCase().length() - 4);
+                if (key.getHyperLink1().trim().contains(".gif") ||
                         tempLink.contains("png") || tempLink.contains("jpg") ||
                         tempLink.contains("jpeg") || tempLink.contains("webp")) {
                     Glide.with(this)
-                            .load(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getHyperLink1())
+                            .load(key.getHyperLink1())
                             .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
                             .into(imageViewPlayerPreview);
                     imageViewPlayerPreview.setBackgroundColor(0);
@@ -335,42 +274,42 @@ public class BattleSceneActivity extends AppCompatActivity {
                     webViewPlayerPreview.setVisibility(View.INVISIBLE);
                     break;
                 } else {
-                    webViewPlayerPreview.loadUrl(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(key).getHyperLink1());
+                    webViewPlayerPreview.loadUrl(key.getHyperLink1());
                     imageViewPlayerPreview.setVisibility(View.INVISIBLE);
                     webViewPlayerPreview.setVisibility(View.VISIBLE);
                     break;
                 }
             }
         }
-        for (String key : SaveLoadData.userData.temporaryTheme.getTempLoadOut().keySet()) {
-            if (SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getBattleState().equals("Starter")) {
-                opponentMonsterId = key;
-                String tempLink = SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getHyperLink1().toLowerCase().substring(SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getHyperLink1().toLowerCase().length() - 4);
-                if (SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getHyperLink1().trim().contains(".gif") ||
+        for (Monster key : SaveLoadData.tempData.tempLoadOut.get(1).getMonsterTeam()) {
+            if (key.getBattleState().equals("Starter")) {
+                opponentMonsterId = key.getBattleId();
+                String tempLink = key.getHyperLink2().toLowerCase().substring(key.getHyperLink2().toLowerCase().length() - 4);
+                if (key.getHyperLink2().trim().contains(".gif") ||
                         tempLink.contains("png") || tempLink.contains("jpg") ||
                         tempLink.contains("jpeg") || tempLink.contains("webp")) {
                     Glide.with(this)
-                            .load(SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getHyperLink1())
+                            .load(key.getHyperLink2())
                             .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
-                            .into(imageViewOpponentPreview);
+                            .into(imageViewPlayerPreview);
                     imageViewOpponentPreview.setBackgroundColor(0);
                     imageViewOpponentPreview.setVisibility(View.VISIBLE);
                     webViewOpponentPreview.setVisibility(View.INVISIBLE);
                     break;
                 } else {
-                    webViewOpponentPreview.loadUrl(SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getHyperLink1());
+                    webViewOpponentPreview.loadUrl(key.getHyperLink2());
                     imageViewOpponentPreview.setVisibility(View.INVISIBLE);
                     webViewOpponentPreview.setVisibility(View.VISIBLE);
                     break;
                 }
             }
-            if (SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getHyperLink2() != null) {
-                String tempLink = SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getHyperLink2().toLowerCase().substring(SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getHyperLink2().toLowerCase().length() - 4);
-                if (SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getHyperLink2().trim().contains(".gif") ||
+            if (key.getHyperLink1() != null) {
+                String tempLink = key.getHyperLink1().toLowerCase().substring(key.getHyperLink1().toLowerCase().length() - 4);
+                if (key.getHyperLink1().trim().contains(".gif") ||
                         tempLink.contains("png") || tempLink.contains("jpg") ||
                         tempLink.contains("jpeg") || tempLink.contains("webp")) {
                     Glide.with(this)
-                            .load(SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getHyperLink2())
+                            .load(key.getHyperLink1())
                             .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
                             .into(imageViewOpponentPreview);
                     imageViewOpponentPreview.setBackgroundColor(0);
@@ -378,7 +317,7 @@ public class BattleSceneActivity extends AppCompatActivity {
                     webViewOpponentPreview.setVisibility(View.INVISIBLE);
                     break;
                 } else {
-                    webViewOpponentPreview.loadUrl(SaveLoadData.userData.temporaryTheme.getTempOpponentLoadOut().get(key).getHyperLink2());
+                    webViewOpponentPreview.loadUrl(key.getHyperLink1());
                     imageViewOpponentPreview.setVisibility(View.INVISIBLE);
                     webViewOpponentPreview.setVisibility(View.VISIBLE);
                     break;
@@ -386,23 +325,15 @@ public class BattleSceneActivity extends AppCompatActivity {
             }
         }
     }
-    String updateDescription(int moveNumber, String monsterId){
+    String updateDescription(String moveId, String monsterId){
         String textDescription = "";
-        for(String key: SaveLoadData.userData.temporaryTheme.getMoveList().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(moveNumber)).getEffectList().keySet()) {
-            int effectIndex = Integer.parseInt(SaveLoadData.userData.temporaryTheme.getMoveList().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(moveNumber)).getEffectList().get(key).get(1));
+        for(EffectInfo key: SaveLoadData.tempData.temporaryTheme.getMove(moveId).getEffectList()) {
+            int effectIndex = key.getEffectChoice();
             String state = moveEffect.getHideVariableList().get(effectIndex);
-            String variable1 = state.charAt(0) != '0' ? state.charAt(0) == '1' ?
-                    SaveLoadData.userData.temporaryTheme.getMoveList().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(moveNumber)).getEffectList().get(key).get(2)
-                    : SaveLoadData.userData.temporaryTheme.getMoveList().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(moveNumber)).getEffectList().get(key).get(6) : "";
-            String variable2 = state.charAt(1) != '0' ? state.charAt(1) == '1' ?
-                    SaveLoadData.userData.temporaryTheme.getMoveList().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(moveNumber)).getEffectList().get(key).get(3)
-                    : SaveLoadData.userData.temporaryTheme.getMoveList().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(moveNumber)).getEffectList().get(key).get(7) : "";
-            String variable3 = state.charAt(2) != '0' ? state.charAt(2) == '1' ?
-                    SaveLoadData.userData.temporaryTheme.getMoveList().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(moveNumber)).getEffectList().get(key).get(4)
-                    : SaveLoadData.userData.temporaryTheme.getMoveList().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(moveNumber)).getEffectList().get(key).get(8) : "";
-            String variable4 = state.charAt(3) != '0' ? state.charAt(3) == '1' ?
-                    SaveLoadData.userData.temporaryTheme.getMoveList().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(moveNumber)).getEffectList().get(key).get(5)
-                    : SaveLoadData.userData.temporaryTheme.getMoveList().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(moveNumber)).getEffectList().get(key).get(9) : "";
+            String variable1 = state.charAt(0) != '0' ? state.charAt(0) == '1' ? key.getW() : key.getSpinnerW():"";
+            String variable2 = state.charAt(1) != '0' ? state.charAt(1) == '1' ? key.getX() : key.getSpinnerX():"";
+            String variable3 = state.charAt(2) != '0' ? state.charAt(2) == '1' ? key.getY() : key.getSpinnerY():"";
+            String variable4 = state.charAt(3) != '0' ? state.charAt(3) == '1' ? key.getZ() : key.getSpinnerZ():"";
            textDescription = textDescription + moveEffect.getEffectNameList().get(effectIndex) +"\n";
             if (state.charAt(0) == '0') textDescription = textDescription +(moveEffect.getEffectDescriptionList().get(effectIndex)) +"\n";
             else if(state.charAt(1) == '0') textDescription = textDescription +(String.format(moveEffect.getEffectDescriptionList().get(effectIndex),variable1))+"\n";
@@ -414,21 +345,22 @@ public class BattleSceneActivity extends AppCompatActivity {
     }
     String monsterStatus(String monsterId){
         String textStatus = "";
-        textStatus = textStatus+"HP:"+ SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMonsterStats().get("Hit Point").get(1)+
-                "/"+SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMonsterStats().get("Hit Point").get(2) +"\n";
+        textStatus = textStatus+"HP:"+ SaveLoadData.tempData.tempLoadOut.get(0).getMonster(monsterId).getRealmMonsterStat("Hit Point").value+
+                "/"+SaveLoadData.tempData.tempLoadOut.get(0).getMonster(monsterId).getRealmMonsterStat("Hit Point").originalValue +"\n";
         //textStatus = textStatus+"Status: "
         return textStatus;
     }
     String moveText(String monsterId){
         String textMove = "";
-        for(int i = 0; i< SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().size();i++){
-            String key = SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(i);
-            textMove = textMove+ SaveLoadData.userData.temporaryTheme.getMoveList().get(key).getName()+" ";
-            textMove = textMove+ SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getExtraVar().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(i))+"/"+SaveLoadData.userData.temporaryTheme.getMoveList().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(i)).getUseCount()+"\n";
-            textMove = textMove+ "Power:"+ SaveLoadData.userData.temporaryTheme.getMoveList().get(key).getPower()+"\n";
-            textMove = textMove+ "Accuracy:"+ SaveLoadData.userData.temporaryTheme.getMoveList().get(key).getAccuracy()+"\n";
-            textMove = textMove+"Type:"+ SaveLoadData.userData.temporaryTheme.getTypeList().get(SaveLoadData.userData.temporaryTheme.getMoveList().get(key).getTypeId()).getName()+"\n";
-            textMove = textMove + updateDescription(i,monsterId);
+        for(int i = 0; i< SaveLoadData.tempData.tempLoadOut.get(0).getMonster(monsterId).getMoveList().size();i++){
+            String key = SaveLoadData.tempData.tempLoadOut.get(0).getMonster(monsterId).getMoveList().get(i);
+            textMove = textMove+ SaveLoadData.tempData.temporaryTheme.getMove(key).getName()+" ";
+           // textMove = textMove+ SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getExtraVar().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(i))+"/"+
+            //        SaveLoadData.userData.temporaryTheme.getMoveList().get(SaveLoadData.userData.temporaryTheme.getTempLoadOut().get(monsterId).getMoveList().get(i)).getUseCount()+"\n";
+            textMove = textMove+ "Power:"+ SaveLoadData.tempData.temporaryTheme.getMove(key).getPower()+"\n";
+            textMove = textMove+ "Accuracy:"+ SaveLoadData.tempData.temporaryTheme.getMove(key).getAccuracy()+"\n";
+            textMove = textMove+"Type:"+ SaveLoadData.tempData.temporaryTheme.getType(SaveLoadData.tempData.temporaryTheme.getMove(key).getTypeId()).getName()+"\n";
+            textMove = textMove + updateDescription(key,monsterId);
         }
         return textMove;
 

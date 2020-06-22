@@ -11,19 +11,25 @@ import java.util.List;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 public class Move  extends RealmObject implements Serializable {
-    @PrimaryKey
+    public static final String PROPERTY_ID = "id";
+    public static final String PROPERTY_NAME = "name";
+
+
+    @PrimaryKey @Required
+    private String id;
+
     private String name;
     private String typeId;
     private String useCount;
     private String priority;
     private String power;
     private String accuracy;
-    private String id;
+
     private RealmList<String> extraVar  = new RealmList<>(); //extra Var is use for future proofing, can store move variable for moves
-    public RealmList<String> tempEffect  = new RealmList<>();;
-    private RealmList<String> effectList = new RealmList<>();
+    private RealmList<EffectInfo> effectList = new RealmList<>();
     //the first String is the id of the effect
     //String[0] is id of effect
     //String[1] is effect choice
@@ -99,15 +105,38 @@ public class Move  extends RealmObject implements Serializable {
     }
 
 
-    public void setEffectList(RealmList<String> effectList) {
+    public void setEffectList(RealmList<EffectInfo> effectList) {
         this.effectList = effectList;
     }
-    public RealmList<String> getEffectList() {
+    public RealmList<EffectInfo> getEffectList() {
         return effectList;
     }
 
-    public void addToEffectList(){
-        this.effectList.add(tempEffect.get(0));
+    public void addToEffectList(EffectInfo tempEffect){
+        for(EffectInfo effectInfo: effectList){
+            if(effectInfo.getId().equals(tempEffect.getId())){
+                effectList.remove(effectInfo);
+            }
+        }
+        this.effectList.add(tempEffect);
+    }
+
+    public EffectInfo getEffect(String id){
+        for(EffectInfo effectInfo: effectList){
+            if(effectInfo.getId().equals(id)){
+                return effectInfo;
+            }
+        }
+        return new EffectInfo();
+    }
+
+    public void removeEffectList(EffectInfo tempEffect)
+    {
+        for(EffectInfo effectInfo: effectList){
+            if(effectInfo.getId().equals(tempEffect.getId())){
+                effectList.remove(effectInfo);
+            }
+        }
     }
 }
 

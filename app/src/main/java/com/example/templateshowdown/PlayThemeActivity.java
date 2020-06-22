@@ -22,6 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import io.realm.Realm;
+
 @EActivity(R.layout.activity_play_theme)
 public class PlayThemeActivity  extends AppCompatActivity {
     @ViewById
@@ -29,11 +31,22 @@ public class PlayThemeActivity  extends AppCompatActivity {
     private String message;
     private SimpleDateFormat gmtDateFormat;
     public static String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
+    private Realm mRealm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         message = intent.getStringExtra(SelectThemeActivity.EXTRA_MESSAGE); // the theme id will be passed in
+        mRealm = Realm.getDefaultInstance();
+    }
+    void loadTheme() {
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                if(realm.where(Theme.class).equalTo(Theme.PROPERTY_ID, message).findFirst()!=null)
+                    SaveLoadData.tempData.temporaryTheme = realm.copyFromRealm(realm.where(Theme.class).equalTo(Theme.PROPERTY_ID, message).findFirst());
+            }
+        });
     }
 
     @Override
@@ -41,8 +54,8 @@ public class PlayThemeActivity  extends AppCompatActivity {
         super.onPostCreate(savedInstanceState);
         gmtDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         gmtDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-        SaveLoadData.userData.temporaryTheme = new Theme(SaveLoadData.userData.getThemeList().get(message));
-        textViewTitle.setText(SaveLoadData.userData.temporaryTheme.getName());
+        loadTheme();
+        textViewTitle.setText(SaveLoadData.tempData.temporaryTheme.getName());
     }
 
     @Click(R.id.buttonFreeBattle)
